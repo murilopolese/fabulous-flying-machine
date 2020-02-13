@@ -1,15 +1,16 @@
 console.log('renderer')
 
 const EventEmitter = require('events')
-const SerialPort = require('serialport')
+const SerialConnection = require('../../libs/micropython.js')
 
 const serialBus = new EventEmitter()
 let port = null
+let connection = null
 const SERIAL_BUFFER_SIZE = 128
 
 serialBus.on('load-ports', () => {
 	console.log('loading ports')
-	SerialPort.list()
+	SerialConnection.listAvailable()
 		.then((ports) => {
 			serialBus.emit('ports', ports)
 		})
@@ -20,56 +21,61 @@ serialBus.on('load-ports', () => {
 
 serialBus.on('connect', (p) => {
 	console.log('connecting to port', p)
-	port = new SerialPort(p, {
-		autoOpen: true,
-		baudRate: 115200
+	connection = new SerialConnection()
+	connection.on('connected', () => {
+		serialBus.emit('connected', p)
 	})
-	port.on('data', (data) => {
-		let dataString = data.toString()
-		console.log('got data from serial', dataString)
-		serialBus.emit('data', dataString)
+	connection.on('disconnected', () => {
+		serialBus.emit('disconnected', p)
 	})
-	port.on('open', () => {
-		console.log('connection opened')
-		serialBus.emit('connected', port)
+	connection.on('output', (d) => {
+		serialBus.emit('data', d)
 	})
-	port.on('close', () => {
-		serialBus.emit('disconnected')
+	connection.on('execution-started', () => {
+		serialBus.emit('running')
 	})
+	connection.on('execution-finished', () => {
+		serialBus.emit('stopped')
+	})
+	connection.open(p)
 })
 serialBus.on('disconnect', () => {
 	console.log('disconnecting to port')
-	port.close()
+	connection.close()
 	serialBus.emit('disconnected')
 })
 
 serialBus.on('run', (code) => {
 	console.log('running code', code)
-	let lines = code.split(`\n`)
-	port.write(Buffer.from(`\x01`))
-	lines.forEach((line) => {
-		port.write(Buffer.from(`${line}\n`))
-	})
-	port.write(Buffer.from(`\x04`))
-	port.write(Buffer.from(`\x02`))
+	connection.execute(code)
 	serialBus.emit('running')
 })
 
 serialBus.on('stop', (code) => {
 	console.log('stopping code')
-	port.write(Buffer.from(`\r\x03`))
+	connection.stop()
 	serialBus.emit('stopped')
 })
 
 serialBus.on('reset', (code) => {
 	console.log('reseting board')
-	port.write(Buffer.from(`\r\x04`))
+	connection.softReset()
 	serialBus.emit('stopped')
 })
 
 serialBus.on('write', (command) => {
 	console.log('write command', Buffer.from(command))
-	port.write(Buffer.from(command))
+	connection.evaluate(command)
+})
+
+serialBus.on('save-file', (filename, code) => {
+	console.log('save file', filename, code)
+	// connection.writeFile(filename, code)
+})
+
+serialBus.on('load-file', (filename) => {
+	console.log('load file', filename)
+	// connection.loadFile(filename)
 })
 
 if (window.onSerialBusReady) {

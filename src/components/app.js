@@ -56,8 +56,15 @@ class App extends React.Component {
 		console.log('refreshing ports')
 		window.serialBus.emit('load-ports')
 	}
+	upload() {
+		console.log('save file')
+		window.serialBus.emit('save-file', 'pixelkit.py', this.props.state.editorValue)
+	}
+	download() {
+		console.log('load file')
+		window.serialBus.emit('load-file', 'pixelkit.py')
+	}
 	handleKeyDown(key) {
-		console.log('key', key)
 		switch(key) {
 			case 'Control':
 			case 'Meta':
@@ -144,6 +151,8 @@ class App extends React.Component {
 						run={this.run.bind(this)}
 						stop={this.stop}
 						reset={this.reset}
+						upload={this.upload.bind(this)}
+						download={this.download.bind(this)}
 					/>
 				</Box>
 				<Box style={{width: '100%', height: 'calc(100% - 70px)'}}>
@@ -155,7 +164,7 @@ class App extends React.Component {
 				<Box hidden={!this.props.state.isConsoleOpen} style={consoleStyle}>
 					<Console
 						data={this.props.state.consoleContent}
-						onKeyDown={this.handleKeyDown.bind(this)}
+						onKeyDown={this.handleKeyDown}
 					/>
 				</Box>
 			</Box>

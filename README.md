@@ -45,16 +45,16 @@ Electron backend consist in two files, `index.js` and `renderer.js`.
 
 The front end will be able to communicate with the hardware serial over this nodejs `EventEmitter` instance that should live at `window.serialBus`.
 
-The events the front end can emit to it are:
-- `connect`: Connect to serial port. Called with a string argument `port`.
+The events the front end can emit are:
 - `list-ports`: Request the list of available serial ports.
+- `connect`: Connect to serial port. Called with a string argument `port`.
 - `disconnect`: Close current connection.
 - `run`: Enters RAW REPL mode, paste content, execute and leaves RAW REPL mode. Called with a string argument `code`.
 - `stop`: Sends an interrupt to the board (`ctrl c` or `\r\x03`).
 - `reset`: Resets board (`ctrl d` or `\r\x04`).
 - `write`: Writes to serial. Called with a string argument `command`.
 
-The events it emits from the backend are:
+The events the back end emits are:
 - `connected`: When connected to serial port
 - `disconnected`: When disconnected to serial port
 - `running`: When code is running

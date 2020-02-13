@@ -14,7 +14,9 @@ function Menu({
 	toggleConsole,
 	run,
 	stop,
-	reset
+	reset,
+	upload,
+	download
 }) {
 	return (
 		<Box display="flex" flexDirection="row" justifyContent="space-around">
@@ -41,10 +43,10 @@ function Menu({
 			<Fab color="secondary" aria-label="open">
 				<Folder />
 			</Fab>
-			<Fab color="primary" aria-label="download" disabled={!connected}>
+			<Fab color="primary" aria-label="download" onClick={download} disabled={!connected}>
 				<GetApp />
 			</Fab>
-			<Fab color="primary" aria-label="upload" disabled={!connected}>
+			<Fab color="primary" aria-label="upload" onClick={upload} disabled={!connected}>
 				<Publish />
 			</Fab>
 		</Box>
