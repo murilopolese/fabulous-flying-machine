@@ -4,6 +4,8 @@ import Menu from './menu.js'
 import Editor from './editor.js'
 import Console from './console.js'
 import SerialDialog from './serialdialog.js'
+import SaveDialog from './savedialog.js'
+
 import store from '../store.js'
 
 class App extends React.Component {
@@ -133,6 +135,7 @@ class App extends React.Component {
 		}
 		return (
 			<Box style={{width: '100%', height: '100%'}}>
+				<SaveDialog />
 				<SerialDialog
 					ports={this.props.state.ports}
 					open={this.props.state.isPortDialogOpen}

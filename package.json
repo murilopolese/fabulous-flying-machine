@@ -9,14 +9,14 @@
 		"pack": "electron-builder --dir",
 		"dist": "electron-builder"
 	},
-	"devDependencies": {
-		"electron": "^8.0.0",
-		"electron-builder": "^22.3.2",
-		"electron-rebuild": "^1.10.0"
-	},
+	"devDependencies": {},
 	"author": "",
 	"license": "ISC",
 	"dependencies": {
+		"electron": "^8.0.0",
+		"electron-builder": "^22.3.2",
+		"electron-rebuild": "^1.10.0",
+		"mkdirp": "^1.0.3",
 		"serialport": "^8.0.7"
 	}
 }

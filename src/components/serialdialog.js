@@ -14,7 +14,7 @@ function SerialDialog({
 	handleClose
 }) {
 	return (
-		<Dialog open={open} onClose={handleClose}>
+		<Dialog open={open} onClose={handleClose} aria-labelledby="serial-dialog-title">
 			<DialogTitle id="serial-dialog-title">Select a serial port to connect</DialogTitle>
 			<List>
 				{ports.map(port => (
