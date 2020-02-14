@@ -16,7 +16,9 @@ function Menu({
 	stop,
 	reset,
 	upload,
-	download
+	download,
+	saveLocal,
+	loadLocal
 }) {
 	return (
 		<Box display="flex" flexDirection="row" justifyContent="space-around">
@@ -37,10 +39,10 @@ function Menu({
 			<Fab color="primary" aria-label="terminal" onClick={toggleConsole} disabled={!connected}>
 				<Code />
 			</Fab>
-			<Fab color="secondary" aria-label="save">
+			<Fab color="secondary" aria-label="save" onClick={saveLocal}>
 				<Save />
 			</Fab>
-			<Fab color="secondary" aria-label="open">
+			<Fab color="secondary" aria-label="open" onClick={loadLocal}>
 				<Folder />
 			</Fab>
 			<Fab color="primary" aria-label="download" onClick={download} disabled={!connected}>

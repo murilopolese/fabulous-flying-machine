@@ -5,6 +5,7 @@ import Editor from './editor.js'
 import Console from './console.js'
 import SerialDialog from './serialdialog.js'
 import SaveDialog from './savedialog.js'
+import { saveAs } from 'file-saver';
 
 import store from '../store.js'
 
@@ -18,6 +19,21 @@ class App extends React.Component {
 				payload: `Hello and Welcome!\nI'm your console.\n>>> `
 			})
 		}, 0)
+	}
+	componentDidMount() {
+		if (this.refs.fileInput) {
+			this.refs.fileInput.addEventListener('change', (e) => {
+				const reader = new FileReader()
+				if (this.refs.fileInput.files && this.refs.fileInput.files[0]) {
+					reader.onload = () => {
+						console.log('loaded', reader.result)
+						store.dispatch({ type: 'CHANGE_EDITOR', payload: reader.result })
+						this.refs.fileInput.value = ''
+					}
+					reader.readAsText(this.refs.fileInput.files[0])
+				}
+			})
+		}
 	}
 	onEditorChange(value) {
 		store.dispatch({ type: 'CHANGE_EDITOR', payload: value })
@@ -58,68 +74,64 @@ class App extends React.Component {
 		console.log('refreshing ports')
 		window.serialBus.emit('load-ports')
 	}
-	upload() {
-		console.log('save file')
-		window.serialBus.emit('save-file', 'pixelkit.py', this.props.state.editorValue)
+	openSaveDialog() {
+		store.dispatch({ type: 'OPEN_SAVE_DIALOG' })
+	}
+	closeSaveDialog() {
+		store.dispatch({ type: 'CLOSE_SAVE_DIALOG' })
 	}
 	download() {
-		console.log('load file')
-		window.serialBus.emit('load-file', 'pixelkit.py')
 	}
-	handleKeyDown(key) {
-		switch(key) {
+	handleKeyDown(e) {
+		switch(e.key) {
+			case 'ArrowLeft':
+			case 'ArrowRight':
 			case 'Control':
 			case 'Meta':
 			case 'Shift':
+			case 'Alt':
+			case 'Escape':
+			case 'NumLock':
+			case 'Insert':
+			case 'Home':
+			case 'End':
+			case 'PageUp':
+			case 'PageDown':
+			case 'CapsLock':
+			case 'ContextMenu':
+				break
+			case 'ArrowDown':
+				break
+			case 'ArrowUp':
 				break
 			case 'Tab':
-				window.serialBus.emit('write', '\t')
+				window.serialBus.emit('write', Buffer.from('\t'))
 				break
 			case 'Backspace':
-				window.serialBus.emit('write', '\b')
+				window.serialBus.emit('write', Buffer.from('\b'))
 				break
 			case 'Enter':
-				window.serialBus.emit('write', `\r\n`)
+				window.serialBus.emit('write', Buffer.from(`\r\n`))
 				break
 			default:
-				window.serialBus.emit('write', key)
-			}
-	}
-	handleKeyDownLocal(key) {
-		let state = this.props.state.consoleContent
-		switch(key) {
-			case 'Control':
-			case 'Meta':
-			case 'Shift':
-				break
-			case 'Tab':
-				store.dispatch({
-					type: 'APPEND_CONSOLE_CONTENT',
-					payload: `\t`
-				})
-				break
-			case 'Backspace':
-				if (
-					state.slice(-1) !== `\n`
-					&& state.slice(-5) !== `\n>>> `
-				) {
-					store.dispatch({
-						type: 'POP_CONSOLE_CONTENT'
-					})
-				}
-				break;
-			case 'Enter':
-				store.dispatch({
-					type: 'APPEND_CONSOLE_CONTENT',
-					payload: `\n>>> `
-				})
-				break
-			default:
-				store.dispatch({
-					type: 'APPEND_CONSOLE_CONTENT',
-					payload: key
-				})
+				window.serialBus.emit('write', e.key)
 		}
+	}
+	handleSaveFile(filename) {
+		console.log('saving file', filename, this.props.state.editorValue)
+		window.serialBus.emit('save-file', filename, this.props.state.editorValue)
+	}
+	loadLocal() {
+		if (this.refs.fileInput) {
+			this.refs.fileInput.click()
+		}
+	}
+	saveLocal() {
+		console.log('save local')
+		let blob = new Blob([this.props.state.editorValue], {type: "text/plain;charset=utf-8"})
+		console.log('blob', blob)
+		saveAs(blob, "script.py");
+		console.log('prompt?')
 	}
 	render() {
 		const consoleStyle = {
@@ -135,7 +147,12 @@ class App extends React.Component {
 		}
 		return (
 			<Box style={{width: '100%', height: '100%'}}>
-				<SaveDialog />
+				<input ref="fileInput" type="file" accept=".py" style={{display: 'none'}} />
+				<SaveDialog
+					open={this.props.state.isSaveDialogOpen}
+					handleSave={this.handleSaveFile.bind(this)}
+					handleClose={this.closeSaveDialog.bind(this)}
+				/>
 				<SerialDialog
 					ports={this.props.state.ports}
 					open={this.props.state.isPortDialogOpen}
@@ -154,8 +171,10 @@ class App extends React.Component {
 						run={this.run.bind(this)}
 						stop={this.stop}
 						reset={this.reset}
-						upload={this.upload.bind(this)}
+						upload={this.openSaveDialog}
 						download={this.download.bind(this)}
+						loadLocal={this.loadLocal.bind(this)}
+						saveLocal={this.saveLocal.bind(this)}
 					/>
 				</Box>
 				<Box style={{width: '100%', height: 'calc(100% - 70px)'}}>

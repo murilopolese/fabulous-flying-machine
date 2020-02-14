@@ -6,6 +6,7 @@ const initialState = {
 	selectedPort: null,
 	editorValue: `print('hello micropython')`,
 	isPortDialogOpen: false,
+	isSaveDialogOpen: false,
 	ports: [],
 	running: false,
 	consoleContent: null
@@ -79,6 +80,18 @@ const reducer = function(state, action) {
 			return {
 				...state,
 				isPortDialogOpen: false
+			}
+			break;
+		case 'OPEN_SAVE_DIALOG':
+			return {
+				...state,
+				isSaveDialogOpen: true
+			}
+			break;
+		case 'CLOSE_SAVE_DIALOG':
+			return {
+				...state,
+				isSaveDialogOpen: false
 			}
 			break;
 		case 'CONNECTED':

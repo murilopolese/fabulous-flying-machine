@@ -8,7 +8,7 @@ class Console extends React.Component {
 	handleKeyDown(e) {
 		e.preventDefault()
 		if (this.props.onKeyDown) {
-			this.props.onKeyDown(e.key)
+			this.props.onKeyDown(e)
 		}
 		if (this.refs.content) {
 			this.refs.term.scrollTo(0, this.refs.content.offsetHeight)

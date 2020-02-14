@@ -26,9 +26,10 @@ window.onSerialBusReady = function(bus) {
 	})
 
 	window.serialBus.on('data', (data) => {
-		console.log('serial data arrived', Buffer.from(data))
+		console.log('serial data arrived', data, Buffer.from(data))
+		let buffer = Buffer.from(data)
 		let backspace = Buffer.from([8, 27, 91, 75])
-		if (Buffer.from(data).equals(backspace)) {
+		if (buffer.equals(backspace)) {
 			store.dispatch({
 				type: 'POP_CONSOLE_CONTENT'
 			})

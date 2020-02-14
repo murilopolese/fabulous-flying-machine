@@ -64,18 +64,23 @@ serialBus.on('reset', (code) => {
 })
 
 serialBus.on('write', (command) => {
-	console.log('write command', Buffer.from(command))
+	console.log('write command', command, Buffer.from(command))
 	connection.evaluate(command)
 })
 
 serialBus.on('save-file', (filename, code) => {
 	console.log('save file', filename, code)
-	// connection.writeFile(filename, code)
+	connection.writeFile(filename, code)
 })
 
 serialBus.on('load-file', (filename) => {
 	console.log('load file', filename)
-	// connection.loadFile(filename)
+	connection.loadFile(filename)
+})
+
+serialBus.on('remove-file', (filename) => {
+	console.log('remove file', filename)
+	connection.removeFile(filename)
 })
 
 if (window.onSerialBusReady) {
