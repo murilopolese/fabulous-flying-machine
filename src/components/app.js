@@ -5,6 +5,7 @@ import Editor from './editor.js'
 import Console from './console.js'
 import SerialDialog from './serialdialog.js'
 import SaveDialog from './savedialog.js'
+import LoadDialog from './loaddialog.js'
 import { saveAs } from 'file-saver';
 
 import store from '../store.js'
@@ -26,7 +27,6 @@ class App extends React.Component {
 				const reader = new FileReader()
 				if (this.refs.fileInput.files && this.refs.fileInput.files[0]) {
 					reader.onload = () => {
-						console.log('loaded', reader.result)
 						store.dispatch({ type: 'CHANGE_EDITOR', payload: reader.result })
 						this.refs.fileInput.value = ''
 					}
@@ -35,19 +35,13 @@ class App extends React.Component {
 			})
 		}
 	}
+
+	// Code editpr
 	onEditorChange(value) {
 		store.dispatch({ type: 'CHANGE_EDITOR', payload: value })
 	}
-	toggleConsole() {
-		store.dispatch({ type: 'TOGGLE_CONSOLE' })
-	}
-	run() {
-		store.dispatch({ type: 'OPEN_CONSOLE' })
-		window.serialBus.emit('run', this.props.state.editorValue)
-	}
-	stop() {
-		window.serialBus.emit('stop')
-	}
+
+	// Connecting
 	openPortDialog() {
 		window.serialBus.emit('load-ports')
 		store.dispatch({ type: 'OPEN_PORT_DIALOG' })
@@ -55,33 +49,67 @@ class App extends React.Component {
 	closePortDialog() {
 		store.dispatch({ type: 'CLOSE_PORT_DIALOG' })
 	}
-	connect() {
-		window.serialBus.emit('connect', this.props.state.selectedPort)
+	connectToPort(port) {
+		store.dispatch({ type: 'SELECT_PORT', payload: port })
+		window.serialBus.emit('connect', port)
+	}
+	refreshPorts() {
+		window.serialBus.emit('load-ports')
 	}
 	disconnect() {
 		window.serialBus.emit('disconnect')
+	}
+
+	// Runtime control
+	run() {
+		store.dispatch({ type: 'OPEN_CONSOLE' })
+		window.serialBus.emit('run', this.props.state.editorValue)
+	}
+	stop() {
+		window.serialBus.emit('stop')
 	}
 	reset() {
 		window.serialBus.emit('stop')
 		window.serialBus.emit('reset')
 	}
-	connectToPort(port) {
-		console.log('selected port', port)
-		store.dispatch({ type: 'SELECT_PORT', payload: port })
-		window.serialBus.emit('connect', port)
-	}
-	refreshPorts() {
-		console.log('refreshing ports')
-		window.serialBus.emit('load-ports')
-	}
+
+	// Save file to board
 	openSaveDialog() {
 		store.dispatch({ type: 'OPEN_SAVE_DIALOG' })
 	}
 	closeSaveDialog() {
 		store.dispatch({ type: 'CLOSE_SAVE_DIALOG' })
 	}
-	download() {
+	handleSaveFile(filename) {
+		window.serialBus.emit('save-file', filename, this.props.state.editorValue)
 	}
+
+	// Load file from board
+	openLoadDialog() {
+		store.dispatch({ type: 'START_LOADING_FILE_LIST' })
+		window.serialBus.emit('list-files')
+		store.dispatch({ type: 'OPEN_LOAD_DIALOG' })
+	}
+	handleLoadFile(filename) {
+		store.dispatch({ type: 'START_LOADING_FILE' })
+		window.serialBus.emit('load-file', filename)
+	}
+	closeLoadDialog() {
+		store.dispatch({ type: 'CLOSE_LOAD_DIALOG' })
+	}
+
+	// Local files
+	loadLocal() {
+		if (this.refs.fileInput) {
+			this.refs.fileInput.click()
+		}
+	}
+	saveLocal() {
+		let blob = new Blob([this.props.state.editorValue], {type: "text/plain;charset=utf-8"})
+		saveAs(blob, "script.py");
+	}
+
+	// Console
 	handleKeyDown(e) {
 		switch(e.key) {
 			case 'ArrowLeft':
@@ -105,34 +133,22 @@ class App extends React.Component {
 			case 'ArrowUp':
 				break
 			case 'Tab':
-				window.serialBus.emit('write', Buffer.from('\t'))
+				window.serialBus.emit('write', '\t')
 				break
 			case 'Backspace':
-				window.serialBus.emit('write', Buffer.from('\b'))
+				window.serialBus.emit('write', '\b')
 				break
 			case 'Enter':
-				window.serialBus.emit('write', Buffer.from(`\r\n`))
+				window.serialBus.emit('write', `\r\n`)
 				break
 			default:
 				window.serialBus.emit('write', e.key)
 		}
 	}
-	handleSaveFile(filename) {
-		console.log('saving file', filename, this.props.state.editorValue)
-		window.serialBus.emit('save-file', filename, this.props.state.editorValue)
+	toggleConsole() {
+		store.dispatch({ type: 'TOGGLE_CONSOLE' })
 	}
-	loadLocal() {
-		if (this.refs.fileInput) {
-			this.refs.fileInput.click()
-		}
-	}
-	saveLocal() {
-		console.log('save local')
-		let blob = new Blob([this.props.state.editorValue], {type: "text/plain;charset=utf-8"})
-		console.log('blob', blob)
-		saveAs(blob, "script.py");
-		console.log('prompt?')
-	}
+
 	render() {
 		const consoleStyle = {
 			position: 'relative',
@@ -153,6 +169,12 @@ class App extends React.Component {
 					handleSave={this.handleSaveFile.bind(this)}
 					handleClose={this.closeSaveDialog.bind(this)}
 				/>
+				<LoadDialog
+					open={this.props.state.isLoadDialogOpen}
+					files={this.props.state.files}
+					handleLoad={this.handleLoadFile.bind(this)}
+					handleClose={this.closeLoadDialog.bind(this)}
+				/>
 				<SerialDialog
 					ports={this.props.state.ports}
 					open={this.props.state.isPortDialogOpen}
@@ -164,15 +186,14 @@ class App extends React.Component {
 					<Menu
 						connected={this.props.state.connected}
 						running={this.props.state.running}
-						connect={this.connect.bind(this)}
 						openPortDialog={this.openPortDialog}
 						disconnect={this.disconnect.bind(this)}
 						toggleConsole={this.toggleConsole}
 						run={this.run.bind(this)}
 						stop={this.stop}
 						reset={this.reset}
-						upload={this.openSaveDialog}
-						download={this.download.bind(this)}
+						upload={this.openSaveDialog.bind(this)}
+						download={this.openLoadDialog.bind(this)}
 						loadLocal={this.loadLocal.bind(this)}
 						saveLocal={this.saveLocal.bind(this)}
 					/>

@@ -21,6 +21,8 @@ class Console extends React.Component {
 				overflow: 'scroll',
 				width: '100%',
 				height: '100%',
+				padding: '10px',
+				boxSizing: 'border-box'
 		}
 		const inputStyle = {
 			position: 'absolute',

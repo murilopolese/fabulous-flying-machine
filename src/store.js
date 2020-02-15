@@ -7,6 +7,9 @@ const initialState = {
 	editorValue: `print('hello micropython')`,
 	isPortDialogOpen: false,
 	isSaveDialogOpen: false,
+	isLoadDialogOpen: false,
+	loadingFile: false,
+	loadingFileList: false,
 	ports: [],
 	running: false,
 	consoleContent: null
@@ -94,6 +97,20 @@ const reducer = function(state, action) {
 				isSaveDialogOpen: false
 			}
 			break;
+		case 'OPEN_LOAD_DIALOG':
+			return {
+				...state,
+				isLoadDialogOpen: true
+			}
+			break;
+		case 'CLOSE_LOAD_DIALOG':
+			return {
+				...state,
+				isLoadDialogOpen: false,
+				loadingFileList: false,
+				loadingFile: false
+			}
+			break;
 		case 'CONNECTED':
 			return {
 				...state,
@@ -116,6 +133,12 @@ const reducer = function(state, action) {
 			return {
 				...state,
 				running: false
+			}
+			break;
+		case 'LOAD_FILE_LIST':
+			return {
+				...state,
+				files: action.payload
 			}
 			break;
 		default:
