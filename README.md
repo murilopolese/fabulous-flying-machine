@@ -1,5 +1,7 @@
 # Fabulous Flying Machine
 
+![](https://i.imgur.com/iwiqVjJ.png)
+
 A MicroPython IDE. Tested on following devices:
 
 - ESP8266
