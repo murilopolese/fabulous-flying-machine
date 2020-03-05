@@ -21,6 +21,8 @@ I draw much of the inspiration for this project from [Processing](https://proces
 	1. `npm install`
 	1. `npm run dev`
 
+Oh, yeah, right now you will have to run it from the source so you will need [Nodejs](https://nodejs.org/en/) and probably [git](https://git-scm.com/) installed on your computer.
+
 ## Where is what?
 
 ### Front end (Renderer Process)
