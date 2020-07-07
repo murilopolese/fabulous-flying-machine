@@ -13,7 +13,7 @@
 	"author": "",
 	"license": "ISC",
 	"dependencies": {
-		"electron": "^8.0.0",
+		"electron": "^8.2.4",
 		"electron-builder": "^22.3.2",
 		"electron-rebuild": "^1.10.0",
 		"mkdirp": "^1.0.3",
