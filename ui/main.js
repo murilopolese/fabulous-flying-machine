@@ -1,82 +1,65 @@
-import Emitter from './emitter.js'
-import initialState from './initialState.js'
-import store from './store.js'
-import framework from './framework.js'
-const { h, render } = framework
+import { html, render } from './libs/lit-html/lit-html.js';
+import Emitter from './libs/emitter.js'
+
+import initialState from './store/initialState.js'
+
+import controlStore from './store/control.js'
+import portsStore from './store/port-dialog.js'
+import consoleStore from './store/console.js'
+import editorStore from './store/editor.js'
+import filesBoardStore from './store/files-board.js'
+import filesDiskStore from './store/files-disk.js'
+
+import Toolbar from './components/toolbar.js'
+import PortDialog from './components/port-dialog.js'
 
 const emitter = new Emitter()
 const state = initialState
 
-store(state, emitter)
+controlStore(state, emitter)
+portsStore(state, emitter)
+consoleStore(state, emitter)
+editorStore(state, emitter)
+filesBoardStore(state, emitter)
+filesDiskStore(state, emitter)
 
-emitter.on('render', () => {
-  render('body', App(state, emitter.emit))
-})
-
-window.serialBus.on('connected', (port) => {
-  emitter.emit('CONNECTED')
-  emitter.emit('OPEN_CONSOLE')
-  emitter.emit('CLOSE_PORT_DIALOG')
-})
-window.serialBus.on('disconnected', (port) => {
-  emitter.emit('DISCONNECTED')
-  emitter.emit('CLOSE_CONSOLE')
-})
-window.serialBus.on('running', () => {
-  emitter.emit('RUNNING')
-})
-window.serialBus.on('stopped', () => {
-  emitter.emit('STOPPED')
-})
-window.serialBus.on('file-loaded', (data) => {
-  emitter.emit('CHANGE_EDITOR', data)
-})
-window.serialBus.on('file-list-loaded', (data) => {
-  let dataJson = []
-  try {
-    dataJson = JSON.parse(data.split(`'`).join(`"`))
-  } catch (e) {
-    console.log('problem loading files', data, state)
-  }
-  emitter.emit('LOAD_FILE_LIST', dataJson)
-})
-window.serialBus.on('data', (data) => {
-  let buffer = Buffer.from(data)
-  emitter.emit('CONSOLE_CONTENT', buffer.toString())
-})
-window.serialBus.on('ports', (ports) => {
-  emitter.emit('LOAD_PORTS', ports)
+emitter.on('RENDER', () => {
+  console.log('render')
+  render(App(state, emitter.emit.bind(emitter)), document.body)
 })
 
 function App(state, emit) {
-  return h('div', { id: 'app' },
-    h('div', { id: 'toolbar' },
-      h('button', { click: () => console.log('poop') }, 'connect'),
-      h('button', { click: () => console.log('poop') }, 'play'),
-      h('button', { click: () => console.log('poop') }, 'stop'),
-      h('button', { click: () => console.log('poop') }, 'reset'),
-      h('button', { click: () => console.log('poop') }, 'console'),
-      h('button', { click: () => console.log('poop') }, 'save file'),
-      h('button', { click: () => console.log('poop') }, 'load file'),
-      h('button', { click: () => console.log('poop') }, 'download'),
-      h('button', { click: () => console.log('poop') }, 'upload')
-    ),
-    h('div', { id: 'code' }),
-    h('div', { id: 'console' })
-  )
+  function Console(state, emit) {
+    return html`<div id="console" class=${state.isConsoleOpen ? '' : 'hidden'}></div>`
+  }
+
+  return html`
+    <div id="app">
+      ${Toolbar(state, emit)}
+      <div id="code"></div>
+      ${Console(state, emit)}
+      ${PortDialog(state, emit)}
+    </div>
+  `
 }
 
 window.onload = () => {
-  emitter.emit('render', App(state, emitter.emit))
+  emitter.emit('RENDER')
 
-  const editor = ace.edit("code")
-  editor.setFontSize(18)
-  editor.setTheme("ace/theme/github")
-  editor.session.setMode("ace/mode/python")
+  state.editor = ace.edit("code")
+  state.editor.setFontSize(18)
+  state.editor.setTheme("ace/theme/github")
+  state.editor.session.setMode("ace/mode/python")
+  state.editor.setValue(state.editorValue)
 
-  const term = new Terminal()
-  const fitAddon = new FitAddon.FitAddon()
-  term.loadAddon(fitAddon)
-  term.open(document.getElementById('console'))
-  fitAddon.fit()
+  state.editor.on('change',
+    (e) => emitter.emit('CHANGE_EDITOR', state.editor.getValue())
+  )
+
+  state.term = new Terminal()
+  state.fitAddon = new FitAddon.FitAddon()
+  state.term.loadAddon(state.fitAddon)
+  state.term.open(document.getElementById('console'))
+
+  state.term.onData((data) => emitter.emit('CONSOLE_CONTENT', data))
 }

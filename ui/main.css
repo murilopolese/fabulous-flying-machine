@@ -1,3 +1,27 @@
+/* fallback */
+@font-face {
+  font-family: 'Material Icons';
+  font-style: normal;
+  font-weight: 400;
+  src: url(libs/icons.woff2) format('woff2');
+}
+
+.material-icons {
+  font-family: 'Material Icons';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -moz-font-feature-settings: 'liga';
+  -moz-osx-font-smoothing: grayscale;
+}
+
 * {
 	box-sizing: border-box;
 	font-family: monospace;
@@ -10,20 +34,7 @@ body {
 	padding: 1rem;
 	width: 100vw;
 	height: 100vh;
-	background: #d3d3d3;
-}
-button {
-	border: none;
-	outline: none;
-	background: #eee;
-	font-size: 1rem;
-	height: 2rem;
-	min-width: 2rem;
-	border-radius: 2rem;
-	cursor: pointer;
-	margin: 0.2rem;
-	background: #f2105a;
-	color: white;
+  background: #eee;
 }
 
 #app {
@@ -37,6 +48,8 @@ button {
 #toolbar {
 	padding-bottom: 0.5rem;
 	text-align: center;
+  display: flex;
+  justify-content: space-between;
 }
 
 #code {
@@ -45,4 +58,12 @@ button {
 
 #console {
 	max-height: 20%;
+}
+
+.secondary-content {
+  cursor: pointer;
+}
+
+.hidden {
+  display: none;
 }

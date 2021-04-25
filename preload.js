@@ -13,6 +13,7 @@ serialBus.on('load-ports', () => {
 			serialBus.emit('ports', ports)
 		})
 		.catch((err) => {
+			console.log(err)
 		})
 })
 
