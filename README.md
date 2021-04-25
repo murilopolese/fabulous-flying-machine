@@ -23,12 +23,12 @@ This is the interface source code. It follows the file structure:
 
 ```
 ui/
-	components/
-	libs/
-	store/
-	index.html
-	main.js
-	main.css
+  components/
+  libs/
+  store/
+  index.html
+  main.js
+  main.css
 ```
 
 Components are all UI elements and arrangements of elements. I'm using `lit-html` library for html templates and (smart) rendering.
@@ -44,6 +44,7 @@ Electron backend consist in two files, `index.js` and `preload.js`.
 
 - `index.js`: Creates Electron app window and core Electron properties.
 - `preload.js`: Has access to the `window` object that will be available to the renderer process. This file is responsible for creating the `serialBus` and handling the events executing the correct serial functions.
+- `micropython.js`: Interface between javascript and MicroPython's REPL via serial connection. This file is very much based on [WebREPL client](https://github.com/murilopolese/webrepl-client)
 
 ### Serial Bus
 
