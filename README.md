@@ -1,6 +1,6 @@
 # Fabulous Flying Machine
 
-![](https://i.imgur.com/iwiqVjJ.png)
+![](docs/connected.png)
 
 A MicroPython IDE. Tested on following devices:
 
@@ -12,38 +12,38 @@ I draw much of the inspiration for this project from [Processing](https://proces
 
 ## Running from source
 
-1. Build front end
-	1. `cd src`
-	1. `npm install`
-	1. `npm run dev` (this will watch changes on files)
-	1. `cd ..` or start a new terminal session
-1. Run electron
-	1. `npm install`
-	1. `npm run dev`
-
-Oh, yeah, right now you will have to run it from the source so you will need [Nodejs](https://nodejs.org/en/) and probably [git](https://git-scm.com/) installed on your computer.
+1. `npm install`
+1. `npm run dev`
 
 ## Where is what?
 
-### Front end (Renderer Process)
+### UI
 
-Interface lives inside `src` folder and builds to `src/dist`. Build is powered by [Parcel](https://parceljs.org/).
+This is the interface source code. It follows the file structure:
 
-- `components`: React components
-	- `app.js`: This is the main app component. This component is the only component that should interact with the redux `store` and `window.serialBus`
-- `dist`: Static build of frontend
-- `index.html`: Build process entry point
-- `main.css`: Main Cascade Style Sheet
-- `main.js`: Main Javascript file that will be built with Parcel.
-- `serial.js`: Register callback to register `serialBus` event handlers. This function will be called by the `renderer.js` file that runs on the main process of Electron.
-- `store.js`: Redux store
+```
+ui/
+	components/
+	libs/
+	store/
+	index.html
+	main.js
+	main.css
+```
 
-### Electron back end (Main Process)
+Components are all UI elements and arrangements of elements. I'm using `lit-html` library for html templates and (smart) rendering.
 
-Electron backend consist in two files, `index.js` and `renderer.js`.
+Even though it has all dependencies listed on the `package.json` file, they are commited as part of the source code under the folder `libs`.
+
+Store files are event handlers that change the state and/or talk with the `serialBus`.
+
+
+### Electron back end
+
+Electron backend consist in two files, `index.js` and `preload.js`.
 
 - `index.js`: Creates Electron app window and core Electron properties.
-- `renderer.js`: Has access to the `window` object that will be available to the renderer process. This file is responsible for creating the `serialBus` and handling the events executing the correct serial functions.
+- `preload.js`: Has access to the `window` object that will be available to the renderer process. This file is responsible for creating the `serialBus` and handling the events executing the correct serial functions.
 
 ### Serial Bus
 
@@ -65,3 +65,29 @@ The events the back end emits are:
 - `stopped`: When code is stopped
 - `data`: When received data from serial
 - `ports`: List all available serial ports. Called with array of serial ports.
+
+## Screenshots
+
+Disconnected:
+
+![](docs/disconnected.png)
+
+Choosing a serial port to connect:
+
+![](docs/port_dialog.png)
+
+Connected:
+
+![](docs/connected.png)
+
+Running code:
+
+![](docs/running.png)
+
+Listing, loading and removing files from MicroPython's file system:
+
+![](docs/download.png)
+
+Saving the current editor content as a file in MicroPython's file system:
+
+![](docs/upload.png)
