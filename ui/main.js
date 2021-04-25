@@ -12,6 +12,8 @@ import filesDiskStore from './store/files-disk.js'
 
 import Toolbar from './components/toolbar.js'
 import PortDialog from './components/port-dialog.js'
+import DownloadDialog from './components/download-dialog.js'
+import UploadDialog from './components/upload-dialog.js'
 
 const emitter = new Emitter()
 const state = initialState
@@ -39,6 +41,8 @@ function App(state, emit) {
       <div id="code"></div>
       ${Console(state, emit)}
       ${PortDialog(state, emit)}
+      ${DownloadDialog(state, emit)}
+      ${UploadDialog(state, emit)}
     </div>
   `
 }

@@ -3,18 +3,16 @@ import { html } from '../libs/lit-html/lit-html.js';
 const initialState = {
 	term: null,
 	editor: null,
-	isConsoleOpen: false,
 	connected: false,
-	selectedPort: null,
+	running: false,
 	editorValue: `print('hello micropython')`,
+	isConsoleOpen: false,
 	isPortDialogOpen: false,
 	isUploadDialogOpen: false,
 	isDownloadDialogOpen: false,
-	loadingFile: false,
-	loadingFileList: false,
+	uploadFileName: 'main.py',
 	ports: [],
-	running: false,
-	consoleContent: `Hello, I'm console!`
+	files: []
 }
 
 export default initialState

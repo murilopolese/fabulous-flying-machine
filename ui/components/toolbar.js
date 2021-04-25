@@ -47,15 +47,18 @@ function Toolbar(state, emit) {
       icon: 'folder_open'
     }),
     MenuButton({
-      click: () => emit('OPEN_DOWNLOAD_DIALOG'),
+      click: () => {
+        emit('LOAD_BOARD_FILES')
+        emit('OPEN_DOWNLOAD_DIALOG')
+      },
       icon: 'download',
-      disabled: !state.connected,
+      disabled: !state.connected || state.running,
       color: 'blue'
     }),
     MenuButton({
       click: () => emit('OPEN_UPLOAD_DIALOG'),
       icon: 'upload',
-      disabled: !state.connected,
+      disabled: !state.connected || state.running,
       color: 'blue'
     })
   ]

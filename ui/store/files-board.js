@@ -1,10 +1,20 @@
 function store (state, emitter) {
-  emitter.on('LOAD_FILES', () => {
+  emitter.on('LOAD_BOARD_FILES', () => {
 		window.serialBus.emit('list-files')
 		emitter.emit('RENDER')
 	})
-  emitter.on('REMOVE_FILE', (file) => {
-		window.serialBus.emit('list-files')
+  emitter.on('LOAD_BOARD_FILE', ({ detail }) => {
+		window.serialBus.emit('load-file', detail)
+		emitter.emit('RENDER')
+	})
+  emitter.on('REMOVE_BOARD_FILE', ({ detail }) => {
+		window.serialBus.emit('remove-file', detail)
+    emitter.emit('LOAD_BOARD_FILES')
+		emitter.emit('RENDER')
+	})
+  emitter.on('UPLOAD_BOARD_FILE', ({ detail }) => {
+    console.log('upload', state.uploadFileName, state.editorValue)
+		window.serialBus.emit('save-file', state.uploadFileName, state.editorValue)
 		emitter.emit('RENDER')
 	})
   emitter.on('OPEN_UPLOAD_DIALOG', () => {
