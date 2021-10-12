@@ -10,7 +10,7 @@
 		"build": "electron-builder"
 	},
 	"devDependencies": {
-		"electron": "^8.0.0",
+		"electron": "^11.5.0",
 		"electron-builder": "^22.3.2",
 		"electron-rebuild": "^1.10.0"
 	},
