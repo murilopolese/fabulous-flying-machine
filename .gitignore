@@ -5,3 +5,4 @@ dist
 .history
 dist/
 package-lock.json
+.vscode
