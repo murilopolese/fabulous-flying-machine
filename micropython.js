@@ -26,10 +26,8 @@ remove('${path}')
 `
 }
 
-const codeCollectGarbage = `
-import gc
-gc.collect()
-`
+const codeCollectGarbage = `import gc
+gc.collect()`
 
 class SerialConnection extends EventEmitter {
 	constructor() {
@@ -139,26 +137,67 @@ class SerialConnection extends EventEmitter {
 	* @param {String} path File's path
 	* @param {String} content File's content
 	*/
+
 	writeFile(path, content) {
 		if (!path || !content) {
 			return
 		}
 		// TODO: Find anoter way to do it without binascii
 		let pCode = `f = open('${path}', 'w')\n`
-		pCode += `import gc; gc.collect\n`
+		// pCode += `import gc; gc.collect()\n`
+		pCode += codeCollectGarbage + '\n'
 		// `content` is what comes from the editor. We want to write it
 		// line one by one on a file so we split by `\n`
-		content.split('\n').forEach((line) => {
+		var lineCount = 0;
+		var lines = content.split('\r\n')
+		lines.forEach((line) => {
+			if (line) {
+				var nlMarker = line.indexOf('\n');
+				var crMarker = line.indexOf('\r');
+				// TODO: Sanitize line replace """ with \"""
+				// To avoid the string escaping with weirdly we encode
+				// the line plus the `\n` that we just removed to base64
+				pCode += `f.write("""${line}""")`
+				if(lineCount != lines.length - 1){
+					pCode += `\nf.write('\\n')\n`
+				}
+				lineCount++;
+			}
+		})
+		pCode += `\nf.close()\n`
+		this.execute(pCode)
+	}
+
+	saveFileToBoard() {
+		var content = "print('- Hello, Arduino!')\nprint('- Hello, MicroPython! :)')\n#abc"
+		var path = "testsave.py"
+		if (!path || !content) {
+			return
+		}
+		// TODO: Find anoter way to do it without binascii
+		let pCode = `f = open("${path}", "w")\n`
+		// pCode += `import gc; gc.collect()\n`
+		pCode += codeCollectGarbage + '\n'
+		// `content` is what comes from the editor. We want to write it
+		// line one by one on a file so we split by `\n`
+		var lineCount = 0;
+		var lines = content.split('\r\n')
+		lines.forEach((line) => {
 			if (line) {
 				// TODO: Sanitize line replace """ with \"""
 				// To avoid the string escaping with weirdly we encode
 				// the line plus the `\n` that we just removed to base64
-				pCode += `f.write("""${line}\\n""")\n`
+				pCode += `f.write("""${line}""")`
+				if(lineCount != lines.length - 1){
+					pCode += `\nf.write('\\n')\n`
+				}
+				lineCount++;
 			}
 		})
-		pCode += 'f.close()\n'
+		pCode += `\nf.close()\n`
 		this.execute(pCode)
 	}
+
 	/**
 	* Removes file on a given path
 	* @param {String} path File's path
@@ -184,7 +223,8 @@ class SerialConnection extends EventEmitter {
 			this.data += data
 		}
 		if (data.indexOf('<EOF>') !== -1) {
-			const rec = this.data.indexOf('<REC>')+5
+			const iofREC = this.data.indexOf('<REC>')
+			const rec = this.data.indexOf('<REC>\r\n')+7
 			const eof = this.data.indexOf('<EOF>')
 			if (this.loadingFile) {
 				this.emit('file-loaded', this.data.slice(rec, eof))

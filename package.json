@@ -4,13 +4,13 @@
 	"description": "",
 	"main": "index.js",
 	"scripts": {
-		"install": "electron-rebuild",
 		"dev": "electron ./",
 		"pack": "electron-builder --dir",
-		"build": "electron-builder"
+		"build": "electron-builder --mac --x64",
+		"postinstall": "npm install electron@8.5.5 --arch=x64 --save-dev && electron-rebuild"
 	},
 	"devDependencies": {
-		"electron": "^8.0.0",
+		"electron": "^8.5.5",
 		"electron-builder": "^22.3.2",
 		"electron-rebuild": "^1.10.0"
 	},
