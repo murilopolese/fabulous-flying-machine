@@ -4,10 +4,13 @@
 	"description": "",
 	"main": "index.js",
 	"scripts": {
+		"post-set-shell": "npm config set script-shell bash",
+		"post-install": "npm install electron@8.5.5 $(if [ \"$(uname -m)\" =  \"arm64\" ]; then echo \"--arch=x64\"; fi) --save-dev",
+		"post-rebuild": "electron rebuild",
 		"dev": "electron ./",
 		"pack": "electron-builder --dir",
 		"build": "electron-builder $(if [ \"$(uname -m)\" =  \"arm64\" ]; then echo \"--mac --x64\"; fi)",
-		"postinstall": "npm config set script-shell bash && npm install electron@8.5.5 $(if [ \"$(uname -m)\" =  \"arm64\" ]; then echo \"--arch=x64\"; fi) --save-dev && electron-rebuild"
+		"postinstall": "npm run post-set-shell && npm run post-install && npm run post-rebuild"
 	},
 	"devDependencies": {
 		"electron": "^8.5.5",
