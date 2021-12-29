@@ -221,7 +221,7 @@ jobs:
     # This job must run after all jobs that use the transfer artifact.
     needs:
       - build
-      - publish
+      # - publish
       - release
       # - artifacts
     if: always() && needs.build.result != 'skipped'
