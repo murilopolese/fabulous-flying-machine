@@ -4,6 +4,7 @@
 	"description": "",
 	"main": "index.js",
 	"scripts": {
+		"preinstall": "npm config set script-shell bash",
 		"dev": "electron ./",
 		"pack": "electron-builder --dir",
 		"build": "electron-builder $(if [ \"$(uname -m)\" =  \"arm64\" ]; then echo \"--mac --x64\"; fi)",
