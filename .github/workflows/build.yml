@@ -20,6 +20,7 @@ jobs:
   build:
     if: github.repository == 'arduino/fabulous-flying-machine'
     strategy:
+      fail-fast: false
       matrix:
         config:
           - os: windows-latest
