@@ -9,7 +9,7 @@
 		"post-rebuild": "electron rebuild",
 		"dev": "electron ./",
 		"pack": "electron-builder --dir",
-		"build": "electron-builder $(if [ \"$(uname -m)\" =  \"arm64\" ]; then echo \"--mac --x64\"; fi)",
+		"build": "npm run post-set-shell && electron-builder $(if [ \"$(uname -m)\" =  \"arm64\" ]; then echo \"--mac --x64\"; fi)",
 		"postinstall": "npm run post-set-shell && npm run post-install && npm run post-rebuild"
 	},
 	"devDependencies": {
