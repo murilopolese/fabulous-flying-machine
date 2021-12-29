@@ -7,7 +7,7 @@
 		"dev": "electron ./",
 		"pack": "electron-builder --dir",
 		"build": "electron-builder --mac --x64",
-		"postinstall": "npm install electron@8.5.5 $(if [[ $(uname -m) ==  arm64 ]]; then echo --arch=x64; fi) --save-dev && electron-rebuild"
+		"postinstall": "npm install electron@8.5.5 $(if [ $(uname -m) ==  arm64 ]; then --arch=x64; fi) --save-dev && electron-rebuild"
 	},
 	"devDependencies": {
 		"electron": "^8.5.5",
