@@ -27,8 +27,7 @@ The `package.json` is already setup to install requirements and run a post-insta
 1. `nvm install 14`
 1. `nvm use 14`
 1. `npm install`
-1. `sudo npm run build`
-1. `insert your user's password if requested`
+1. `npm run build`
 
 ## Where is what?
 
