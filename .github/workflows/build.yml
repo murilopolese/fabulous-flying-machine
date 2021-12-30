@@ -103,7 +103,7 @@ jobs:
           #   name: Windows_X86-64_interactive_installer
           # - path: "*Windows_64bit.msi"
           #   name: Windows_X86-64_MSI
-          - path: "*win_x64.zip"
+          - path: "*-win_x64.zip"
             name: Windows_X86-64_zip
           
           # THIS IS MESSED UP
