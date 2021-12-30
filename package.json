@@ -17,6 +17,19 @@
 		"electron-builder": "^22.3.2",
 		"electron-rebuild": "^1.10.0"
 	},
+	"build": {
+		"artifactName": "${productName}-${os}_${arch}.${ext}",
+		"mac":{
+			"target": "dmg"
+		},
+		"win":{
+			"target": "portable"
+		},
+		"linux":{
+			"target": "zip"
+		}
+		
+	},
 	"author": "",
 	"license": "ISC",
 	"dependencies": {
