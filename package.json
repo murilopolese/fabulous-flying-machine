@@ -1,15 +1,15 @@
 {
 	"name": "fabulous-flying-machine",
-	"version": "1.0.0",
+	"version": "0.2.0",
 	"description": "",
 	"main": "index.js",
 	"scripts": {
 		"post-set-shell": "npm config set script-shell bash",
-		"post-install": "npm install electron@8.5.5 $(if [ \"$(uname -m)\" =  \"arm64\" ]; then echo \"--arch=x64\"; fi) --save-dev",
-		"post-rebuild": "electron rebuild",
+		"post-install": "npm install electron@8.5.5 $(if [ $(uname -m) =  arm64 ]; then echo --arch=x64; fi) --save-dev",
+		"post-rebuild": "electron-rebuild",
 		"dev": "electron ./",
 		"pack": "electron-builder --dir",
-		"build": "npm run post-set-shell && electron-builder $(if [ \"$(uname -m)\" =  \"arm64\" ]; then echo \"--mac --x64\"; fi)",
+		"build": "npm run post-set-shell && electron-builder $(if [ $(uname -m) =  arm64 ]; then echo --mac --x64; fi)",
 		"postinstall": "npm run post-set-shell && npm run post-install && npm run post-rebuild"
 	},
 	"devDependencies": {
