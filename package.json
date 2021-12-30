@@ -20,10 +20,10 @@
 	"build": {
 		"artifactName": "${productName}-${os}_${arch}.${ext}",
 		"mac":{
-			"target": "dmg"
+			"target": "zip"
 		},
 		"win":{
-			"target": "portable"
+			"target": "zip"
 		},
 		"linux":{
 			"target": "zip"

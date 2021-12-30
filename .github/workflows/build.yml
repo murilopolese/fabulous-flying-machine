@@ -95,15 +95,15 @@ jobs:
     strategy:
       matrix:
         artifact:
-          - path: "*Linux_64bit.zip"
+          - path: "*-linux_x64.zip"
             name: Linux_X86-64
-          - path: "*mac_x64.dmg"
+          - path: "*-mac_x64.zip"
             name: macOS
           # - path: "*Windows_64bit.exe"
           #   name: Windows_X86-64_interactive_installer
           # - path: "*Windows_64bit.msi"
           #   name: Windows_X86-64_MSI
-          - path: "*Windows_64bit.zip"
+          - path: "*win_x64.zip"
             name: Windows_X86-64_zip
           
           # THIS IS MESSED UP
