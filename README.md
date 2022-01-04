@@ -7,13 +7,27 @@ A MicroPython IDE. Tested on following devices:
 - ESP8266
 - ESP32
 - Micro:bit
+- Arduino Nano RP2040 Connect (OpenMV MicroPython)
 
 I draw much of the inspiration for this project from [Processing](https://processing.org) and [Mu Editor](https://codewith.mu/).
 
-## Running from source
 
+## Before starting
+Make sure you have `nvm` or another Node Version Manager on your system.
+To build on M1 you will need Node 14.18.2 and Electron ^8.0 (tested on 8.5.5).
+The `package.json` is already setup to install requirements and run a post-install to take care of the correct version of Electron
+
+
+## Running from source
 1. `npm install`
 1. `npm run dev`
+
+
+## Building Electron App (Mac x64)
+1. `nvm install 14`
+1. `nvm use 14`
+1. `npm install`
+1. `npm run build`
 
 ## Where is what?
 

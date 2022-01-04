@@ -64,6 +64,9 @@ window.onload = () => {
   state.fitAddon = new FitAddon.FitAddon()
   state.term.loadAddon(state.fitAddon)
   state.term.open(document.getElementById('console'))
-
   state.term.onData((data) => emitter.emit('CONSOLE_CONTENT', data))
+}
+
+module.exports = {
+  get xtrm() { return state.term}
 }
