@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>MicroPython IDE</title>
+    <link rel="stylesheet" href="theme.css">
+  </head>
+  <body>
+    <div id="app" class="column fill">
+      <!-- TOOLBAR -->
+      <div id="toolbar" class="row fill-horizontal gray">
+        <div>
+          <button class="round">P</button>
+          <button class="round">S</button>
+          <button class="round">R</button>
+        </div>
+        <div class="fill row justify-center align-center">
+          <button class="square">1</button>
+          <button class="square">2</button>
+          <button class="square">3</button>
+          <button class="square">4</button>
+        </div>
+        <div>
+          <button class="round">C</button>
+        </div>
+      </div>
+      <!-- WORKSPACE -->
+      <div id="workspace" class="row fill">
+
+        <div id="panel" class="column lightgray">
+          <div id="file-actions" class="row fill-horizontal align-center">
+            <button class="tiny">N</button>
+            <button class="tiny">U</button>
+            <button class="tiny">R</button>
+            <button class="tiny">D</button>
+          </div>
+          <ul id="file-list" class="column">
+            <li>main.py</li>
+            <li><input value="boot.py" /></li>
+            <li>libs.py</li>
+            <li>example_button.py</li>
+            <li>tutorial.py</li>
+          </ul>
+        </div>
+
+        <div id="main" class="column fill">
+          <div id="file-header" class="row fill-horizontal align-center lightgray">
+            <button class="tiny">F</button>
+            <div id="file-name" class="row fill-horizontal">main.py</div>
+          </div>
+          <div id="editor" class="fill"></div>
+        </div>
+
+      </div>
+      <!-- CONSOLE -->
+      <div id="console" class="column fill-horizontal black">
+        <div id="bar" class="fill-horizontal gray"></div>
+        <div id="terminal"></div>
+      </div>
+    </div>
+  </body>
+</html>

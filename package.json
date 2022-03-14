@@ -1,6 +1,6 @@
 {
 	"name": "fabulous-flying-machine",
-	"version": "0.2.0",
+	"version": "1.0.0",
 	"description": "",
 	"main": "index.js",
 	"scripts": {
@@ -19,16 +19,15 @@
 	},
 	"build": {
 		"artifactName": "${productName}-${os}_${arch}.${ext}",
-		"mac":{
+		"mac": {
 			"target": "zip"
 		},
-		"win":{
+		"win": {
 			"target": "zip"
 		},
-		"linux":{
+		"linux": {
 			"target": "zip"
 		}
-		
 	},
 	"author": "",
 	"license": "ISC",
