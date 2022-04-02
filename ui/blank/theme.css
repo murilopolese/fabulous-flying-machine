@@ -3,24 +3,17 @@
   --color-1: #E5E5E5;
   --color-2: #FAFAFA;
   --color-3: #FFFFFF;
-
   font-size: 2vh;
+}
+
+* {
+  box-sizing: border-box;
 }
 
 body {
   width: 100vw;
   height: 100vh;
   overflow: hidden;
-}
-
-body,
-#app,
-#toolbar, #toolbar *,
-#bar, #bar *,
-#files, #files *,
-#terminal,
-#editor
-{
   position: relative;
   display: flex;
   font-family: monospace;
@@ -28,7 +21,6 @@ body,
   margin: 0;
   padding: 0;
   font-size: 1rem;
-  font-weight: bold;
 }
 
 ul {
@@ -40,13 +32,11 @@ ul {
 .row {
   display: flex;
   flex-direction: row;
-  width: 100%;
 }
 
 .column {
   display: flex;
   flex-direction: column;
-  height: 100%;
 }
 
 .fill {
@@ -105,6 +95,12 @@ button {
   align-items: center;
   justify-content: center;
   outline: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  margin: 0;
+  padding: 0.25rem;
 }
 button[disabled] {
   opacity: 0.5;
@@ -156,21 +152,18 @@ body,
   margin: 0 0.3rem;
 }
 
-#panel {
-  height: 3rem;
-}
-
 #bar {
   height: 3rem;
   padding: 0.5rem;
-  cursor: row-resize;
+}
+#bar.disabled {
+  cursor: auto;
 }
 #bar button {
   margin: 0 0.25rem;
 }
-
-#terminal {
-  height: calc(100% - 2rem);
+#bar.resizable {
+  cursor: row-resize;
 }
 
 #board-files,
@@ -183,6 +176,9 @@ body,
   padding: 1.0rem;
 }
 
+#file-actions {
+  width: 5rem;
+}
 #file-actions button {
   margin: 0.25rem 0;
 }
@@ -204,6 +200,7 @@ body,
   height: auto;
   background: var(--color-3);
   padding: 2rem;
+  font-size: 1.25rem;
   box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14),0 3px 1px -2px rgba(0,0,0,0.12),0 1px 5px 0 rgba(0,0,0,0.2);
 }
 
@@ -214,4 +211,9 @@ body,
 #dialog ul li:hover {
   background: var(--color-1);
   border-radius: 0.25rem;
+}
+
+#terminal {
+  padding: 0.5rem 1rem;
+  overflow: hidden;
 }
