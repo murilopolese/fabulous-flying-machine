@@ -1,5 +1,11 @@
 function Editor(state, emit) {
-  return state.cache(AceEditor, 'editor').render()
+  return html`
+    <div id="file-header" class="row lightgray align-center">
+      <div class="device-icon">${Image({ src: 'icons/folder.png' })}</div>
+      <div class="file-name">main.py</div>
+    </div>
+    ${state.cache(AceEditor, 'editor').render()}
+  `
 }
 
 class AceEditor extends Component {
@@ -10,7 +16,7 @@ class AceEditor extends Component {
 
   load(element) {
     this.editor = ace.edit("editor")
-    this.editor.setFontSize(18)
+    this.editor.setFontSize(14)
     this.editor.setTheme("ace/theme/github")
     this.editor.session.setMode("ace/mode/python")
     this.editor.setValue(

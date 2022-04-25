@@ -15,8 +15,8 @@ function Panel(state, emit) {
     `
   }
 
-  let isTerminalSelected = (state.panel === 'terminal')
-  let isFilesSelected = (state.panel === 'files')
+  let isTerminalSelected = (state.panel === 'terminal') && !state.panelCollapsed
+  let isFilesSelected = (state.panel === 'files') && !state.panelCollapsed
 
   // Dragging event handlers
   function onMouseDown(e) {

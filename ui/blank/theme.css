@@ -1,7 +1,7 @@
 :root {
   --color-0: #000000;
-  --color-1: #E5E5E5;
-  --color-2: #FAFAFA;
+  --color-1: #DFDFDF;
+  --color-2: #F0F0F0;
   --color-3: #FFFFFF;
   font-size: 2vh;
 }
@@ -27,6 +27,11 @@ ul {
   list-style: none;
   margin: 0;
   padding: 0;
+}
+
+img {
+  max-width: 100%;
+  max-height: 100%;
 }
 
 .row {
@@ -89,7 +94,7 @@ ul {
 
 button {
   border: none;
-  background: var(--color-2);
+  background: var(--color-3);
   box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14),0 3px 1px -2px rgba(0,0,0,0.12),0 1px 5px 0 rgba(0,0,0,0.2);
   cursor: pointer !important;
   align-items: center;
@@ -116,6 +121,7 @@ button.active {
 }
 button.inactive {
   background: var(--color-1);
+  box-shadow: none;
 }
 button img {
   max-width: 60%;
@@ -137,19 +143,27 @@ button.tiny {
   font-size: 0.75rem;
 }
 
-html,
-body,
 #app {
   width: 100%;
   height: 100%;
 }
 
 #toolbar {
-  padding: 1rem;
+  padding: 1rem 0.5rem;
+}
+#toolbar button {
+  margin: 0 0.5rem;
 }
 
-#toolbar button {
-  margin: 0 0.3rem;
+#file-header {
+  padding: 0.5rem 1rem;
+}
+#file-header .device-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+#file-header .file-name {
+  padding: 0 1rem;
 }
 
 #bar {
@@ -164,6 +178,10 @@ body,
 }
 #bar.resizable {
   cursor: row-resize;
+}
+
+#terminal {
+  border: solid 0.2rem var(--color-3);
 }
 
 #board-files,
@@ -193,7 +211,6 @@ body,
   z-index: 99;
   background: rgba(255, 255, 255, 0.5);
 }
-
 #dialog {
   margin: auto;
   width: 80%;
@@ -203,7 +220,6 @@ body,
   font-size: 1.25rem;
   box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14),0 3px 1px -2px rgba(0,0,0,0.12),0 1px 5px 0 rgba(0,0,0,0.2);
 }
-
 #dialog ul li {
   padding: 0.5rem;
   cursor: pointer;
