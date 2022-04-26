@@ -1,20 +1,4 @@
 function Panel(state, emit) {
-  // If it's not connected, show disabled panel
-  if (!state.connected) {
-    return html`
-      <div id="bar" class="gray row align-center justify-end disabled">
-        ${SquareButton(
-          { className: 'inactive', onclick: () => emit('open-port-dialog') },
-          Image({ src: 'icons/folder.png' })
-        )}
-        ${SquareButton(
-          { className: 'inactive', onclick: () => emit('open-port-dialog') },
-          Image({ src: 'icons/developer_board.png' })
-        )}
-      </div>
-    `
-  }
-
   let isTerminalSelected = (state.panel === 'terminal') && !state.panelCollapsed
   let isFilesSelected = (state.panel === 'files') && !state.panelCollapsed
 

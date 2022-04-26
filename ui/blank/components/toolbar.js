@@ -16,8 +16,14 @@ function Toolbar(state, emit) {
     Image({src: 'icons/cable.png'})
   )
 
-  const openFolderButton = RoundButton({}, Image({src: 'icons/folder.png'}))
-  const saveButton = RoundButton({}, Image({src: 'icons/sd_storage.png'}))
+  const openFolderButton = RoundButton(
+    { onclick: () => emit('list-disk-folder') },
+    Image({src: 'icons/folder.png'})
+  )
+  const saveButton = RoundButton(
+    { onclick: () => emit('save-editor') },
+    Image({src: 'icons/sd_storage.png'})
+  )
 
   return html`
     <div id="toolbar" class="row gray">

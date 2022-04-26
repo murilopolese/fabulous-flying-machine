@@ -1,4 +1,5 @@
 console.log('preload')
+const { ipcRenderer } = require('electron')
 const EventEmitter = require('events')
 const SerialConnection = require('./micropython.js')
 
@@ -85,3 +86,24 @@ serialBus.on('remove-file', (filename) => {
 })
 
 window.serialBus = serialBus
+
+
+const diskBus = new EventEmitter()
+
+diskBus.on('list-folder', () => {
+	console.log('diskBus', 'list-folder')
+	ipcRenderer.invoke('list-folder')
+		.then((result) => {
+			diskBus.emit('folder-listed', result)
+		})
+})
+
+diskBus.on('load-file', (diskFolder, selectedFile) => {
+	console.log('diskBus', 'load-file', diskFolder, selectedFile)
+	ipcRenderer.invoke('load-file', diskFolder, selectedFile)
+		.then((result) => {
+			diskBus.emit('file-loaded', result)
+		})
+})
+
+window.diskBus = diskBus

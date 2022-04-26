@@ -6,6 +6,14 @@ function store(state, emitter) {
   state.panelHeight = 200
   state.panelCollapsed = true
 
+  state.selectedFile = null
+  state.selectedDevice = null
+  state.diskFolder = null
+  state.renamingFile = false
+
+  state.diskFiles = []
+  state.serialFiles = []
+
 
   emitter.on('open-port-dialog', () => {
     console.log('open-port-dialog')
@@ -75,6 +83,16 @@ function store(state, emitter) {
     window.serialBus.emit('reset')
   })
 
+  emitter.on('list-disk-folder', () => {
+    window.diskBus.emit('list-folder')
+  })
+  emitter.on('select-disk-file', (file) => {
+    state.selectedDevice = 'disk'
+    state.selectedFile = file
+    window.diskBus.emit('load-file', state.diskFolder, state.selectedFile)
+    emitter.emit('render')
+  })
+
   window.serialBus.on('connected', (port) => {
     console.log('connected', port)
     state.connected = true
@@ -96,5 +114,23 @@ function store(state, emitter) {
     let buffer = Buffer.from(data)
     state.cache(XTerm, 'terminal').term.write(buffer)
     state.cache(XTerm, 'terminal').term.scrollToBottom()
+  })
+
+  window.diskBus.on('folder-loaded', (folder) => {
+    console.log('folder-loaded', folder)
+    state.diskFolder = folder
+    state.selectedDevice = 'disk'
+    state.panelCollapsed = false
+    emitter.emit('select-panel', 'files')
+  })
+  window.diskBus.on('folder-listed', ({ folder, files }) => {
+    console.log('folder-listed', folder, files)
+    state.diskFiles = files
+    window.diskBus.emit('folder-loaded', folder)
+  })
+  window.diskBus.on('file-loaded', (file) => {
+    console.log('file-loaded', file)
+    let code = new TextDecoder().decode(file)
+    state.cache(AceEditor, 'editor').editor.setValue(code)
   })
 }

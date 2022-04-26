@@ -4,7 +4,7 @@ function App(state, emit) {
       ${Toolbar(state, emit)}
       ${Editor(state, emit)}
       ${Panel(state, emit)}
-      ${state.isPortDialogOpen ? Dialog(state, emit) : null}
+      ${state.isPortDialogOpen ? PortDialog(state, emit) : null}
     </div>
   `
 }

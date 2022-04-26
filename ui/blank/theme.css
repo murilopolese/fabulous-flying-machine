@@ -181,7 +181,7 @@ button.tiny {
 }
 
 #terminal {
-  border: solid 0.2rem var(--color-3);
+  border: solid 0.2rem var(--color-1);
 }
 
 #board-files,
@@ -191,7 +191,22 @@ button.tiny {
 }
 #board-files ul,
 #system-files ul {
-  padding: 1.0rem;
+  padding: 0.25rem 1.0rem;
+}
+
+#files ul {
+  overflow-x: hidden;
+  overflow-y: scroll;
+}
+#files ul li {
+  cursor: pointer;
+  padding: 0.25rem 0;
+}
+#files ul li:hover {
+  background: var(--color-2);
+}
+#files ul li.selected {
+  background: var(--color-1);
 }
 
 #file-actions {

@@ -1,8 +1,15 @@
+
 function Editor(state, emit) {
+  const diskIcon = Image({ src: 'icons/folder.png' })
+  const serialIcon = Image({ src: 'icons/developer_board.png' })
+  let icon = null
+  if (state.selectedDevice === 'serial') icon = serialIcon
+  if (state.selectedDevice === 'disk') icon = diskIcon
+
   return html`
     <div id="file-header" class="row lightgray align-center">
-      <div class="device-icon">${Image({ src: 'icons/folder.png' })}</div>
-      <div class="file-name">main.py</div>
+      <div class="device-icon">${icon}</div>
+      <div class="file-name">${state.selectedFile}</div>
     </div>
     ${state.cache(AceEditor, 'editor').render()}
   `
@@ -19,13 +26,6 @@ class AceEditor extends Component {
     this.editor.setFontSize(14)
     this.editor.setTheme("ace/theme/github")
     this.editor.session.setMode("ace/mode/python")
-    this.editor.setValue(
-`i = 0
-while i < 1000:
-  print(i)
-  i+= 1
-`
-)
   }
 
   createElement(content) {
