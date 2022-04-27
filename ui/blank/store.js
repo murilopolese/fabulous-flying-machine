@@ -89,8 +89,37 @@ function store(state, emitter) {
   emitter.on('select-disk-file', (file) => {
     state.selectedDevice = 'disk'
     state.selectedFile = file
-    window.diskBus.emit('load-file', state.diskFolder, state.selectedFile)
+    window.diskBus.emit(
+      'load-file',
+      {
+        folder: state.diskFolder,
+        filename: state.selectedFile
+      }
+    )
     emitter.emit('render')
+  })
+
+  emitter.on('save-file', () => {
+    let editor = state.cache(AceEditor, 'editor').editor
+    if (state.selectedDevice === 'board') {
+      alert('soon')
+    } else if (state.selectedDevice === 'disk') {
+      if (!state.diskFolder) {
+        emitter.emit('list-disk-folder')
+      } else {
+        if (!state.selectedFile) state.selectedFile = 'untitled'
+        window.diskBus.emit(
+          'save-file',
+          {
+            folder: state.diskFolder,
+            filename: state.selectedFile,
+            content: editor.getValue()
+          }
+        )
+      }
+    } else {
+      emitter.emit('list-disk-folder')
+    }
   })
 
   window.serialBus.on('connected', (port) => {
@@ -128,9 +157,14 @@ function store(state, emitter) {
     state.diskFiles = files
     window.diskBus.emit('folder-loaded', folder)
   })
-  window.diskBus.on('file-loaded', (file) => {
-    console.log('file-loaded', file)
-    let code = new TextDecoder().decode(file)
+  window.diskBus.on('file-loaded', (fileContent) => {
+    console.log('file-loaded', fileContent)
+    let code = new TextDecoder().decode(fileContent)
     state.cache(AceEditor, 'editor').editor.setValue(code)
+  })
+
+  window.diskBus.on('file-saved', () => {
+    console.log('file-saved')
+    window.diskBus.emit('update-folder', state.diskFolder)
   })
 }

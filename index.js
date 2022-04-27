@@ -29,6 +29,23 @@ ipcMain.handle('load-file', (event, folder, filename) => {
   return content
 })
 
+ipcMain.handle('save-file', (event, folder, filename, content) => {
+  console.log('ipcMain', 'save-file', folder, filename, content)
+  let filePath = path.resolve(folder, filename)
+  fs.writeFileSync(filePath, content, 'utf8')
+  return true
+})
+
+ipcMain.handle('update-folder', (event, folder) => {
+  let files = fs.readdirSync(path.resolve(folder))
+  // Filter out directories
+  files = files.filter(f => {
+    let filePath = path.resolve(folder, f)
+    return !fs.lstatSync(filePath).isDirectory()
+  })
+  return { folder, files }
+})
+
 function createWindow () {
   // Create the browser window.
   win = new BrowserWindow({

@@ -21,7 +21,7 @@ function Toolbar(state, emit) {
     Image({src: 'icons/folder.png'})
   )
   const saveButton = RoundButton(
-    { onclick: () => emit('save-editor') },
+    { onclick: () => emit('save-file') },
     Image({src: 'icons/sd_storage.png'})
   )
 

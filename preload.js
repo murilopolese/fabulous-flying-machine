@@ -98,11 +98,31 @@ diskBus.on('list-folder', () => {
 		})
 })
 
-diskBus.on('load-file', (diskFolder, selectedFile) => {
-	console.log('diskBus', 'load-file', diskFolder, selectedFile)
-	ipcRenderer.invoke('load-file', diskFolder, selectedFile)
+diskBus.on('load-file', ({ folder, filename }) => {
+	console.log('diskBus', 'load-file', folder, filename)
+	ipcRenderer.invoke('load-file', folder, filename)
 		.then((result) => {
 			diskBus.emit('file-loaded', result)
+		})
+})
+
+diskBus.on('save-file', ({ folder, filename, content }) => {
+	console.log('diskBus', 'save-file', folder, filename, content)
+	ipcRenderer.invoke('save-file', folder, filename, content)
+		.then((result) => {
+			if (result) {
+				diskBus.emit('file-saved')
+			} else {
+				console.log('error', result)
+			}
+		})
+})
+
+diskBus.on('update-folder', (folder) => {
+	console.log('diskBus', 'update-folder', folder)
+	ipcRenderer.invoke('update-folder', folder)
+		.then((results) => {
+			diskBus.emit('folder-listed', results)
 		})
 })
 
