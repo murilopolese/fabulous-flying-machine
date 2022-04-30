@@ -168,36 +168,6 @@ class SerialConnection extends EventEmitter {
 		this.execute(pCode)
 	}
 
-	saveFileToBoard() {
-		var content = "print('- Hello, Arduino!')\nprint('- Hello, MicroPython! :)')\n#abc"
-		var path = "testsave.py"
-		if (!path || !content) {
-			return
-		}
-		// TODO: Find anoter way to do it without binascii
-		let pCode = `f = open("${path}", "w")\n`
-		// pCode += `import gc; gc.collect()\n`
-		pCode += codeCollectGarbage + '\n'
-		// `content` is what comes from the editor. We want to write it
-		// line one by one on a file so we split by `\n`
-		var lineCount = 0;
-		var lines = content.split('\r\n')
-		lines.forEach((line) => {
-			if (line) {
-				// TODO: Sanitize line replace """ with \"""
-				// To avoid the string escaping with weirdly we encode
-				// the line plus the `\n` that we just removed to base64
-				pCode += `f.write("""${line}""")`
-				if(lineCount != lines.length - 1){
-					pCode += `\nf.write('\\n')\n`
-				}
-				lineCount++;
-			}
-		})
-		pCode += `\nf.close()\n`
-		this.execute(pCode)
-	}
-
 	/**
 	* Removes file on a given path
 	* @param {String} path File's path

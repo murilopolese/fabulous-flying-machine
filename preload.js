@@ -70,9 +70,7 @@ serialBus.on('write', (command) => {
 serialBus.on('save-file', (filename, code) => {
 	connection.writeFile(filename, code)
 })
-serialBus.on('save-test-file', () => {
-	connection.saveFileToBoard()
-})
+
 serialBus.on('load-file', (filename) => {
 	connection.loadFile(filename)
 })
