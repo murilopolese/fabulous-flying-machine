@@ -85,7 +85,6 @@ function store(state, emitter) {
   emitter.on('open-disk-folder', () => {
     window.diskBus.emit('open-folder')
   })
-
   emitter.on('select-disk-file', (file) => {
     console.log('select-disk-file', file)
     state.selectedDevice = 'disk'
@@ -124,7 +123,6 @@ function store(state, emitter) {
       alert('soon')
     }
   })
-
   emitter.on('remove-file', () => {
     if (state.selectedDevice === 'disk') {
       window.diskBus.emit(
@@ -139,6 +137,23 @@ function store(state, emitter) {
     if (state.selectedDevice === 'board') {
       alert('soon')
     }
+  })
+
+  emitter.on('start-renaming-file', () => {
+    console.log('start-renaming-file')
+    state.renamingFile = true
+    emitter.emit('render')
+  })
+  emitter.on('end-renaming-file', (filename) => {
+    console.log('end-renaming-file', filename)
+    window.diskBus.emit(
+      'rename-file',
+      {
+        folder: state.diskFolder,
+        filename: state.selectedFile,
+        newFilename: filename
+      }
+    )
   })
 
 
@@ -190,6 +205,11 @@ function store(state, emitter) {
     console.log('diskBus', 'file-removed')
     state.selectedFile = null
     state.cache(AceEditor, 'editor').editor.setValue('')
+    window.diskBus.emit('update-folder', state.diskFolder)
+  })
+  window.diskBus.on('file-renamed', (filename) => {
+    state.renamingFile = false
+    state.selectedFile = filename
     window.diskBus.emit('update-folder', state.diskFolder)
   })
 }

@@ -6,10 +6,27 @@ function Editor(state, emit) {
   if (state.selectedDevice === 'serial') icon = serialIcon
   if (state.selectedDevice === 'disk') icon = diskIcon
 
+  let fileName = html`
+    <div class="file-name" onclick=${() => emit('start-renaming-file')}>
+      ${state.selectedFile || 'untitled'}
+    </div>
+  `
+  if (state.renamingFile) {
+    fileName = html`
+      <div class="file-name" onclick=${() => emit('start-renaming-file')}>
+        <input
+          type="text"
+          value="${state.selectedFile || 'untitled'}"
+          onchange=${(e) => emit('end-renaming-file', e.target.value)} 
+        />
+      </div>
+    `
+  }
+
   return html`
     <div id="file-header" class="row lightgray align-center">
       <div class="device-icon">${icon}</div>
-      <div class="file-name">${state.selectedFile}</div>
+      ${fileName}
     </div>
     ${state.cache(AceEditor, 'editor').render()}
   `

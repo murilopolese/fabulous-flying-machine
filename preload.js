@@ -133,4 +133,12 @@ diskBus.on('remove-file', ({ folder, filename }) => {
 		})
 })
 
+diskBus.on('rename-file', ({ folder, filename, newFilename }) => {
+	console.log('diskBus', 'rename-file', folder, filename, newFilename)
+	ipcRenderer.invoke('rename-file', folder, filename, newFilename)
+		.then((result) => {
+			diskBus.emit('file-renamed', result)
+		})
+})
+
 window.diskBus = diskBus
