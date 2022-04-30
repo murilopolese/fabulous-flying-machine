@@ -134,11 +134,16 @@ diskBus.on('remove-file', ({ folder, filename }) => {
 })
 
 diskBus.on('rename-file', ({ folder, filename, newFilename }) => {
+	// TODO: Sanitize `newFilename`
 	console.log('diskBus', 'rename-file', folder, filename, newFilename)
-	ipcRenderer.invoke('rename-file', folder, filename, newFilename)
-		.then((result) => {
-			diskBus.emit('file-renamed', result)
-		})
+	if (folder && filename) {
+		ipcRenderer.invoke('rename-file', folder, filename, newFilename)
+			.then((result) => {
+				diskBus.emit('file-renamed', result)
+			})
+	} else {
+		diskBus.emit('file-renamed', newFilename)
+	}
 })
 
 window.diskBus = diskBus

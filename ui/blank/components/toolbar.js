@@ -16,6 +16,10 @@ function Toolbar(state, emit) {
     Image({src: 'icons/cable.png'})
   )
 
+  const newButton = RoundButton(
+    { onclick: () => emit('new-file') },
+    Image({src: 'icons/add.png'})
+  )
   const openFolderButton = RoundButton(
     { onclick: () => emit('open-disk-folder') },
     Image({src: 'icons/folder.png'})
@@ -35,6 +39,7 @@ function Toolbar(state, emit) {
         ${resetButton}
       </div>
       <div class="row fill justify-start align-center">
+        ${newButton}
         ${openFolderButton}
         ${saveButton}
       </div>

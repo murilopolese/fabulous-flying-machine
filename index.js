@@ -13,12 +13,15 @@ async function openFolderDialog() {
 ipcMain.handle('open-folder', async (event) => {
   console.log('ipcMain', 'open-folder')
   const folder = await openFolderDialog()
-  let files = fs.readdirSync(path.resolve(folder))
-  // Filter out directories
-  files = files.filter(f => {
-    let filePath = path.resolve(folder, f)
-    return !fs.lstatSync(filePath).isDirectory()
-  })
+  let files = []
+  if (folder) {
+    files = fs.readdirSync(path.resolve(folder))
+    // Filter out directories
+    files = files.filter(f => {
+      let filePath = path.resolve(folder, f)
+      return !fs.lstatSync(filePath).isDirectory()
+    })
+  }
   return { folder, files }
 })
 

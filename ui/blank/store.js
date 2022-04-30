@@ -138,6 +138,11 @@ function store(state, emitter) {
       alert('soon')
     }
   })
+  emitter.on('new-file', () => {
+    state.selectedFile = null
+    state.cache(AceEditor, 'editor').editor.setValue('')
+    emitter.emit('render')
+  })
 
   emitter.on('start-renaming-file', () => {
     console.log('start-renaming-file')
@@ -210,6 +215,10 @@ function store(state, emitter) {
   window.diskBus.on('file-renamed', (filename) => {
     state.renamingFile = false
     state.selectedFile = filename
-    window.diskBus.emit('update-folder', state.diskFolder)
+    if (state.diskFolder) {
+      window.diskBus.emit('update-folder', state.diskFolder)
+    } else {
+      emitter.emit('render')
+    }
   })
 }
