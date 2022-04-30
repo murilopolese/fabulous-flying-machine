@@ -22,8 +22,18 @@ function FileBrowser(state, emit) {
         </ul>
       </div>
       <div id="file-actions" class="column fill-vertical align-center">
-        ${SquareButton({}, Image({src: 'icons/left.png'}))}
-        ${SquareButton({}, Image({src: 'icons/right.png'}))}
+        ${SquareButton(
+          { onclick: () => emit('send-file-to-board'), disabled: !state.selectedFile },
+          Image({src: 'icons/left.png'})
+        )}
+        ${SquareButton(
+          { onclick: () => emit('send-file-to-disk'), disabled: !state.selectedFile },
+          Image({src: 'icons/right.png'})
+        )}
+        ${SquareButton(
+          { onclick: () => emit('remove-file'), disabled: !state.selectedFile },
+          Image({src: 'icons/delete.png'})
+        )}
       </div>
       <div id="system-files" class="fill">
         <ul id="file-list" class="fill white column">

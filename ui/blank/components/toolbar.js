@@ -17,12 +17,14 @@ function Toolbar(state, emit) {
   )
 
   const openFolderButton = RoundButton(
-    { onclick: () => emit('list-disk-folder') },
+    { onclick: () => emit('open-disk-folder') },
     Image({src: 'icons/folder.png'})
   )
+  const canSave = (state.selectedDevice === 'board' && state.connected)
+               || (state.selectedDevice === 'disk' && state.diskFolder)
   const saveButton = RoundButton(
-    { onclick: () => emit('save-file') },
-    Image({src: 'icons/sd_storage.png'})
+    { onclick: () => emit('save-file'), disabled: !canSave },
+    Image({ src: 'icons/sd_storage.png' })
   )
 
   return html`

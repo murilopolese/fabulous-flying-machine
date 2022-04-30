@@ -43,6 +43,7 @@ serialBus.on('connect', (p) => {
 	})
 	connection.open(p)
 })
+
 serialBus.on('disconnect', () => {
 	connection.close()
 	serialBus.emit('disconnected')
@@ -88,11 +89,11 @@ window.serialBus = serialBus
 
 const diskBus = new EventEmitter()
 
-diskBus.on('list-folder', () => {
-	console.log('diskBus', 'list-folder')
-	ipcRenderer.invoke('list-folder')
+diskBus.on('open-folder', () => {
+	console.log('diskBus', 'open-folder')
+	ipcRenderer.invoke('open-folder')
 		.then((result) => {
-			diskBus.emit('folder-listed', result)
+			diskBus.emit('folder-opened', result)
 		})
 })
 
@@ -120,7 +121,15 @@ diskBus.on('update-folder', (folder) => {
 	console.log('diskBus', 'update-folder', folder)
 	ipcRenderer.invoke('update-folder', folder)
 		.then((results) => {
-			diskBus.emit('folder-listed', results)
+			diskBus.emit('folder-updated', results)
+		})
+})
+
+diskBus.on('remove-file', ({ folder, filename }) => {
+	console.log('diskBus', 'remove-file', folder, filename)
+	ipcRenderer.invoke('remove-file', folder, filename)
+		.then((result) => {
+			diskBus.emit('file-removed')
 		})
 })
 

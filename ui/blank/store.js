@@ -7,13 +7,12 @@ function store(state, emitter) {
   state.panelCollapsed = true
 
   state.selectedFile = null
-  state.selectedDevice = null
+  state.selectedDevice = 'disk'
   state.diskFolder = null
   state.renamingFile = false
 
   state.diskFiles = []
   state.serialFiles = []
-
 
   emitter.on('open-port-dialog', () => {
     console.log('open-port-dialog')
@@ -83,10 +82,12 @@ function store(state, emitter) {
     window.serialBus.emit('reset')
   })
 
-  emitter.on('list-disk-folder', () => {
-    window.diskBus.emit('list-folder')
+  emitter.on('open-disk-folder', () => {
+    window.diskBus.emit('open-folder')
   })
+
   emitter.on('select-disk-file', (file) => {
+    console.log('select-disk-file', file)
     state.selectedDevice = 'disk'
     state.selectedFile = file
     window.diskBus.emit(
@@ -100,42 +101,61 @@ function store(state, emitter) {
   })
 
   emitter.on('save-file', () => {
+    console.log('save-file')
     let editor = state.cache(AceEditor, 'editor').editor
+
+    // If no filename is given, defaults to untitled
+    if (!state.selectedFile) {
+      state.selectedFile = 'untitled'
+    }
+
+    if (state.selectedDevice === 'disk') {
+      window.diskBus.emit(
+        'save-file',
+        {
+          folder: state.diskFolder,
+          filename: state.selectedFile,
+          content: editor.getValue()
+        }
+      )
+    }
+
     if (state.selectedDevice === 'board') {
       alert('soon')
-    } else if (state.selectedDevice === 'disk') {
-      if (!state.diskFolder) {
-        emitter.emit('list-disk-folder')
-      } else {
-        if (!state.selectedFile) state.selectedFile = 'untitled'
-        window.diskBus.emit(
-          'save-file',
-          {
-            folder: state.diskFolder,
-            filename: state.selectedFile,
-            content: editor.getValue()
-          }
-        )
-      }
-    } else {
-      emitter.emit('list-disk-folder')
     }
   })
 
+  emitter.on('remove-file', () => {
+    if (state.selectedDevice === 'disk') {
+      window.diskBus.emit(
+        'remove-file',
+        {
+          folder: state.diskFolder,
+          filename: state.selectedFile
+        }
+      )
+    }
+
+    if (state.selectedDevice === 'board') {
+      alert('soon')
+    }
+  })
+
+
   window.serialBus.on('connected', (port) => {
-    console.log('connected', port)
+    console.log('serialBus', 'connected', port)
     state.connected = true
     state.panelCollapsed = false
     emitter.emit('close-port-dialog')
     emitter.emit('render')
   })
-  window.serialBus.on('disconnected', (port) => {
-    console.log('disconnected', port)
+  window.serialBus.on('serialBus', (port) => {
+    console.log('serialBus', 'disconnected', port)
     state.connected = false
     emitter.emit('render')
   })
   window.serialBus.on('ports', (ports) => {
-    console.log('ports', ports)
+    console.log('serialBus', 'ports', ports)
     state.ports = ports
     emitter.emit('render')
   })
@@ -145,26 +165,31 @@ function store(state, emitter) {
     state.cache(XTerm, 'terminal').term.scrollToBottom()
   })
 
-  window.diskBus.on('folder-loaded', (folder) => {
-    console.log('folder-loaded', folder)
+  window.diskBus.on('folder-opened', ({ folder, files }) => {
+    console.log('diskBus', 'folder-opened', folder, files)
+    state.diskFiles = files
     state.diskFolder = folder
     state.selectedDevice = 'disk'
     state.panelCollapsed = false
     emitter.emit('select-panel', 'files')
   })
-  window.diskBus.on('folder-listed', ({ folder, files }) => {
-    console.log('folder-listed', folder, files)
+  window.diskBus.on('folder-updated', ({ folder, files }) => {
     state.diskFiles = files
-    window.diskBus.emit('folder-loaded', folder)
+    emitter.emit('render')
   })
   window.diskBus.on('file-loaded', (fileContent) => {
-    console.log('file-loaded', fileContent)
+    console.log('diskBus', 'file-loaded', fileContent)
     let code = new TextDecoder().decode(fileContent)
     state.cache(AceEditor, 'editor').editor.setValue(code)
   })
-
   window.diskBus.on('file-saved', () => {
-    console.log('file-saved')
+    console.log('diskBus', 'file-saved')
+    window.diskBus.emit('update-folder', state.diskFolder)
+  })
+  window.diskBus.on('file-removed', () => {
+    console.log('diskBus', 'file-removed')
+    state.selectedFile = null
+    state.cache(AceEditor, 'editor').editor.setValue('')
     window.diskBus.emit('update-folder', state.diskFolder)
   })
 }

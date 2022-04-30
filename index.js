@@ -10,8 +10,8 @@ async function openFolderDialog() {
   return dir.filePaths[0] || null
 }
 
-ipcMain.handle('list-folder', async (event) => {
-  console.log('ipcMain', 'list-folder')
+ipcMain.handle('open-folder', async (event) => {
+  console.log('ipcMain', 'open-folder')
   const folder = await openFolderDialog()
   let files = fs.readdirSync(path.resolve(folder))
   // Filter out directories
@@ -44,6 +44,13 @@ ipcMain.handle('update-folder', (event, folder) => {
     return !fs.lstatSync(filePath).isDirectory()
   })
   return { folder, files }
+})
+
+ipcMain.handle('remove-file', (event, folder, filename) => {
+  console.log('ipcMain', 'remove-file', folder, filename)
+  let filePath = path.resolve(folder, filename)
+  fs.unlinkSync(filePath)
+  return true
 })
 
 function createWindow () {
