@@ -69,7 +69,6 @@ serialBus.on('reset', () => {
 })
 
 serialBus.on('write', (command) => {
-	console.log('serialBus', 'write', command)
 	connection.evaluate(command)
 })
 
@@ -84,11 +83,17 @@ serialBus.on('load-file', (filename) => {
 })
 
 serialBus.on('list-files', () => {
-	console.log('list-files')
+	console.log('serialBus', 'list-files')
 	connection.listFiles()
 })
 
+serialBus.on('rename-file', (oldPath, newPath) => {
+	console.log('serialBus', 'rename-file', oldPath, newPath)
+	connection.renameFile(oldPath, newPath)
+})
+
 serialBus.on('remove-file', (filename) => {
+	console.log('serialBus', 'remove-file', filename)
 	connection.removeFile(filename)
 })
 

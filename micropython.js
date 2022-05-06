@@ -22,9 +22,14 @@ print('<ENDREC>')
 const codeRemoveFile = (path) => {
 	return `
 from os import remove
-print('<BEGINREC>')
 remove('${path}')
-print('<ENDREC>')
+`
+}
+
+const codeRenameFile = (oldPath, newPath) => {
+	return `
+from os import rename
+rename('${oldPath}', '${newPath}')
 `
 }
 
@@ -137,7 +142,6 @@ class SerialConnection extends EventEmitter {
 	* @param {String} path File's path
 	* @param {String} content File's content
 	*/
-
 	writeFile(path, content) {
 		if (!path || !content) {
 			return
@@ -176,6 +180,9 @@ class SerialConnection extends EventEmitter {
 		this.execute(codeRemoveFile(path))
 	}
 
+	renameFile(oldPath, newPath) {
+		this.execute(codeRenameFile(oldPath, newPath))
+	}
 	/**
 	* Handles data comming from connection
 	* @param {Buffer} buffer Data comming from connection

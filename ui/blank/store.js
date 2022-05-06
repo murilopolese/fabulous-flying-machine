@@ -90,7 +90,6 @@ function store(state, emitter) {
     window.serialBus.emit('reset')
   })
 
-
   emitter.on('list-board-folder', () => {
     console.log('list-board-folder')
 
@@ -100,10 +99,15 @@ function store(state, emitter) {
       rawMessage = extractREPLMessage(outputBuffer)
       if (rawMessage) {
         // Prepare to parse JSON
+        // console.log('raw message', rawMessage)
         rawMessage = rawMessage.replace(/'/g, `"`)
-        let jsonMessage = JSON.parse(rawMessage)
-        state.boardFiles = jsonMessage
-        emitter.emit('render')
+        try {
+          let jsonMessage = JSON.parse(rawMessage)
+          state.boardFiles = jsonMessage
+          emitter.emit('render')
+        } catch(e) {
+
+        }
         window.serialBus.off('data', parseData)
       }
     }
@@ -172,6 +176,7 @@ function store(state, emitter) {
 
     if (state.selectedDevice === 'board') {
       window.serialBus.emit('save-file', state.selectedFile, editor.getValue())
+      setTimeout(() => emitter.emit('list-board-folder'), 100)
     }
   })
   emitter.on('remove-file', () => {
@@ -187,7 +192,9 @@ function store(state, emitter) {
     }
 
     if (state.selectedDevice === 'board') {
-      alert('soon')
+      window.serialBus.emit('remove-file', state.selectedFile)
+      state.selectedFile = null
+      setTimeout(() => emitter.emit('list-board-folder'), 100)
     }
   })
   emitter.on('new-file', () => {
@@ -198,7 +205,7 @@ function store(state, emitter) {
   })
   emitter.on('update-files', () => {
     if (state.connected) emitter.emit('list-board-folder')
-    if (state.diskFolder) window.diskBus.emit('update-folder')
+    if (state.diskFolder) window.diskBus.emit('update-folder', state.diskFolder)
   })
 
   emitter.on('start-renaming-file', () => {
@@ -219,9 +226,11 @@ function store(state, emitter) {
       )
     }
     if (state.selectedDevice === 'board') {
-      console.log('soon')
+      window.serialBus.emit('rename-file', state.selectedFile, filename)
+      state.selectedFile = filename
       state.renamingFile = false
       emitter.emit('render')
+      setTimeout(() => emitter.emit('update-files'), 100)
     }
 
   })
@@ -314,8 +323,8 @@ function store(state, emitter) {
  * Returns false if <BEGINREC> and <ENDREC> are not found
  */
 function extractREPLMessage(buffer) {
-  let beginIndex = buffer.indexOf('<BEGINREC>')
-  let endIndex = buffer.indexOf('<ENDREC>')
+  let beginIndex = buffer.lastIndexOf('<BEGINREC>')
+  let endIndex = buffer.lastIndexOf('<ENDREC>')
   if (beginIndex !== -1 && endIndex !== -1) {
     return buffer.substring(
       beginIndex + ('<BEGINREC>').length,
