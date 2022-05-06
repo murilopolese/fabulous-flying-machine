@@ -35,10 +35,8 @@ class SerialConnection extends EventEmitter {
 	constructor() {
 		super()
 		this.rawRepl = false
-		this.recordingData = false
 		this.loadingFile = false
 		this.loadingFileList = false
-		this.data = ''
 	}
 	/**
 	* List all available serial ports (with vendor id)
@@ -188,26 +186,26 @@ class SerialConnection extends EventEmitter {
 
 		// Getting data that should be sent to frontend
 		// Loading file content, listing files, etc
-		if (data.indexOf('<REC>') !== -1) {
-			this.recordingData = true
-		}
-		if (this.recordingData) {
-			this.data += data
-		}
-		if (data.indexOf('<EOF>') !== -1) {
-			const iofREC = this.data.indexOf('<REC>')
-			const rec = this.data.indexOf('<REC>\r\n')+7
-			const eof = this.data.indexOf('<EOF>')
-			if (this.loadingFile) {
-				this.emit('file-loaded', this.data.slice(rec, eof))
-				this.loadingFile = false
-			}
-			if (this.loadingFileList) {
-				this.emit('file-list-loaded', this.data.slice(rec, eof))
-				this.loadingFileList = false
-			}
-			this.recordingData = false
-		}
+		// if (data.indexOf('<REC>') !== -1) {
+		// 	this.recordingData = true
+		// }
+		// if (this.recordingData) {
+		// 	this.data += data
+		// }
+		// if (data.indexOf('<EOF>') !== -1) {
+		// 	const iofREC = this.data.indexOf('<REC>')
+		// 	const rec = this.data.indexOf('<REC>\r\n')+7
+		// 	const eof = this.data.indexOf('<EOF>')
+		// 	if (this.loadingFile) {
+		// 		this.emit('file-loaded', this.data.slice(rec, eof))
+		// 		this.loadingFile = false
+		// 	}
+		// 	if (this.loadingFileList) {
+		// 		this.emit('file-list-loaded', this.data.slice(rec, eof))
+		// 		this.loadingFileList = false
+		// 	}
+		// 	this.recordingData = false
+		// }
 
 		if (this.rawRepl && data.indexOf('\n>>> ') != -1) {
 			this.emit('execution-finished')

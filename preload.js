@@ -9,6 +9,7 @@ let connection = null
 const SERIAL_BUFFER_SIZE = 128
 
 serialBus.on('load-ports', () => {
+	console.log('serialBus', 'load-ports')
 	SerialConnection.listAvailable()
 		.then((ports) => {
 			serialBus.emit('ports', ports)
@@ -19,64 +20,71 @@ serialBus.on('load-ports', () => {
 })
 
 serialBus.on('connect', (p) => {
+	console.log('serialBus', 'connect', p)
 	connection = new SerialConnection()
 	connection.on('connected', () => {
+		console.log('serialBus', 'connected')
 		serialBus.emit('connected', p)
 	})
 	connection.on('disconnected', () => {
+		console.log('serialBus', 'disconnected')
 		serialBus.emit('disconnected', p)
 	})
 	connection.on('output', (d) => {
 		serialBus.emit('data', d)
 	})
 	connection.on('execution-started', () => {
+		console.log('serialBus', 'execution-started')
 		serialBus.emit('running')
 	})
 	connection.on('execution-finished', () => {
+		console.log('serialBus', 'execution-finished')
 		serialBus.emit('stopped')
-	})
-	connection.on('file-loaded', (data) => {
-		serialBus.emit('file-loaded', data)
-	})
-	connection.on('file-list-loaded', (data) => {
-		serialBus.emit('file-list-loaded', data)
 	})
 	connection.open(p)
 })
 
 serialBus.on('disconnect', () => {
+	console.log('serialBus', 'disconnect')
 	connection.close()
 	serialBus.emit('disconnected')
 })
 
 serialBus.on('run', (code) => {
+	console.log('serialBus', 'run', code)
 	connection.execute(code)
 	serialBus.emit('running')
 })
 
-serialBus.on('stop', (code) => {
+serialBus.on('stop', () => {
+	console.log('serialBus', 'stop')
 	connection.stop()
 	serialBus.emit('stopped')
 })
 
-serialBus.on('reset', (code) => {
+serialBus.on('reset', () => {
+	console.log('serialBus', 'reset')
 	connection.softReset()
 	serialBus.emit('stopped')
 })
 
 serialBus.on('write', (command) => {
+	console.log('serialBus', 'write', command)
 	connection.evaluate(command)
 })
 
 serialBus.on('save-file', (filename, code) => {
+	console.log('serialBus', 'save-file', filename, code)
 	connection.writeFile(filename, code)
 })
 
 serialBus.on('load-file', (filename) => {
+	console.log('serialBus', 'load-file', filename)
 	connection.loadFile(filename)
 })
 
 serialBus.on('list-files', () => {
+	console.log('list-files')
 	connection.listFiles()
 })
 

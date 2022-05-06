@@ -28,6 +28,37 @@ function FileBrowser(state, emit) {
     `
   }
 
+  let canSendToBoard = state.selectedDevice === 'disk'
+                    && state.connected === true
+                    && state.selectedFile
+                    && state.diskFolder
+  let canSendToDisk = state.selectedDevice === 'board'
+                    && state.connected === true
+                    && state.selectedFile
+                    && state.diskFolder
+
+  let sendToBoardButton = SquareButton(
+    {
+      onclick: () => emit('send-file-to-board'),
+      disabled: !canSendToBoard
+    },
+    Image({src: 'icons/left.png'})
+  )
+  let sendToDiskButton = SquareButton(
+    {
+      onclick: () => emit('send-file-to-disk'),
+      disabled: !canSendToDisk
+    },
+    Image({src: 'icons/right.png'})
+  )
+  let removeButton = SquareButton(
+    {
+      onclick: () => emit('remove-file'),
+      disabled: !state.selectedFile
+    },
+    Image({src: 'icons/delete.png'})
+  )
+
   return html`
     <div id="files" class="row fill">
       <div id="board-files" class="fill">
@@ -36,18 +67,9 @@ function FileBrowser(state, emit) {
         </ul>
       </div>
       <div id="file-actions" class="column fill-vertical align-center">
-        ${SquareButton(
-          { onclick: () => emit('send-file-to-board'), disabled: !state.selectedFile },
-          Image({src: 'icons/left.png'})
-        )}
-        ${SquareButton(
-          { onclick: () => emit('send-file-to-disk'), disabled: !state.selectedFile },
-          Image({src: 'icons/right.png'})
-        )}
-        ${SquareButton(
-          { onclick: () => emit('remove-file'), disabled: !state.selectedFile },
-          Image({src: 'icons/delete.png'})
-        )}
+        ${sendToBoardButton}
+        ${sendToDiskButton}
+        ${removeButton}
       </div>
       <div id="system-files" class="fill">
         <ul id="file-list" class="fill white column">

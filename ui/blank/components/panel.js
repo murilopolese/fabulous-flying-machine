@@ -62,11 +62,19 @@ function Panel(state, emit) {
     `
   } else {
     return html`
-      <div id="bar" class="gray row align-center justify-end resizable" onmousedown=${onMouseDown}>
+      <div
+        id="bar"
+        class="gray row align-center justify-end resizable"
+        onmousedown=${onMouseDown}
+        >
         ${fileButton}
         ${terminalButton}
       </div>
-      <div id="panel" class="${background} column fill" style="height: ${panelHeight}px">
+      <div
+        id="panel" 
+        class="${background} column fill"
+        style="height: ${panelHeight}px"
+        >
         ${isTerminalSelected ? state.cache(XTerm, 'terminal').render() : null}
         ${isFilesSelected ? FileBrowser(state, emit) : null}
       </div>

@@ -2,12 +2,12 @@ function store(state, emitter) {
   state.connected = false
   state.isPortDialogOpen = false
   state.ports = []
-  state.panel = 'terminal'
+  state.panel = 'terminal' // terminal | files
   state.panelHeight = 200
   state.panelCollapsed = true
 
   state.selectedFile = null
-  state.selectedDevice = 'disk'
+  state.selectedDevice = 'disk' // disk | board
   state.diskFolder = null
   state.renamingFile = false
 
@@ -52,6 +52,9 @@ function store(state, emitter) {
   emitter.on('select-panel', (panel) => {
     console.log('select-panel', panel)
     state.panel = panel
+    if (state.panel === 'files') {
+      emitter.emit('update-files')
+    }
     emitter.emit('render')
   })
   emitter.on('toggle-panel', () => {
@@ -90,13 +93,12 @@ function store(state, emitter) {
 
   emitter.on('list-board-folder', () => {
     console.log('list-board-folder')
-    window.serialBus.emit('list-files')
+
     let outputBuffer = ''
     function parseData(o) {
       outputBuffer += o
       rawMessage = extractREPLMessage(outputBuffer)
       if (rawMessage) {
-        console.log('list-board-folder', 'found', rawMessage)
         // Prepare to parse JSON
         rawMessage = rawMessage.replace(/'/g, `"`)
         let jsonMessage = JSON.parse(rawMessage)
@@ -106,8 +108,12 @@ function store(state, emitter) {
       }
     }
     window.serialBus.on('data', parseData)
+
+    window.serialBus.emit('list-files')
   })
   emitter.on('select-board-file', (file) => {
+    console.log('select-board-file')
+
     state.selectedDevice = 'board'
     state.selectedFile = file
 
@@ -116,7 +122,6 @@ function store(state, emitter) {
       outputBuffer += o
       rawMessage = extractREPLMessage(outputBuffer)
       if (rawMessage) {
-        console.log('list-board-folder', 'found', rawMessage)
         state.cache(AceEditor, 'editor').editor.setValue(rawMessage)
         window.serialBus.off('data', parseData)
       }
@@ -166,10 +171,11 @@ function store(state, emitter) {
     }
 
     if (state.selectedDevice === 'board') {
-      alert('soon')
+      window.serialBus.emit('save-file', state.selectedFile, editor.getValue())
     }
   })
   emitter.on('remove-file', () => {
+    console.log('remove-file')
     if (state.selectedDevice === 'disk') {
       window.diskBus.emit(
         'remove-file',
@@ -185,9 +191,14 @@ function store(state, emitter) {
     }
   })
   emitter.on('new-file', () => {
+    console.log('new-file')
     state.selectedFile = null
     state.cache(AceEditor, 'editor').editor.setValue('')
     emitter.emit('render')
+  })
+  emitter.on('update-files', () => {
+    if (state.connected) emitter.emit('list-board-folder')
+    if (state.diskFolder) window.diskBus.emit('update-folder')
   })
 
   emitter.on('start-renaming-file', () => {
@@ -197,14 +208,42 @@ function store(state, emitter) {
   })
   emitter.on('end-renaming-file', (filename) => {
     console.log('end-renaming-file', filename)
+    if (state.selectedDevice === 'disk') {
+      window.diskBus.emit(
+        'rename-file',
+        {
+          folder: state.diskFolder,
+          filename: state.selectedFile,
+          newFilename: filename
+        }
+      )
+    }
+    if (state.selectedDevice === 'board') {
+      console.log('soon')
+      state.renamingFile = false
+      emitter.emit('render')
+    }
+
+  })
+
+  emitter.on('send-file-to-disk', () => {
+    console.log('send-file-to-disk')
+    let editor = state.cache(AceEditor, 'editor').editor
     window.diskBus.emit(
-      'rename-file',
+      'save-file',
       {
         folder: state.diskFolder,
         filename: state.selectedFile,
-        newFilename: filename
+        content: editor.getValue()
       }
     )
+    emitter.emit('update-files')
+  })
+  emitter.on('send-file-to-board', () => {
+    console.log('send-file-to-board')
+    let editor = state.cache(AceEditor, 'editor').editor
+    window.serialBus.emit('save-file', state.selectedFile, editor.getValue())
+    emitter.emit('update-files')
   })
 
 
@@ -270,6 +309,10 @@ function store(state, emitter) {
   })
 }
 
+/*
+ * This function extracts the raw content between <BEGINREC> and <ENDREC>
+ * Returns false if <BEGINREC> and <ENDREC> are not found
+ */
 function extractREPLMessage(buffer) {
   let beginIndex = buffer.indexOf('<BEGINREC>')
   let endIndex = buffer.indexOf('<ENDREC>')
