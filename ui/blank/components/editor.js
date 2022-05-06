@@ -12,16 +12,26 @@ function Editor(state, emit) {
     </div>
   `
   if (state.renamingFile) {
+    let input = html`
+      <input
+        type="text"
+        name="filename"
+        value="${state.selectedFile || 'untitled'}"
+        onchange=${(e) => emit('end-renaming-file', e.target.value)}
+        onblur=${(e) => emit('end-renaming-file', e.target.value)}
+      />
+    `
     fileName = html`
       <div class="file-name" onclick=${() => emit('start-renaming-file')}>
-        <input
-          type="text"
-          value="${state.selectedFile || 'untitled'}"
-          onchange=${(e) => emit('end-renaming-file', e.target.value)} 
-        />
+        ${input}
       </div>
     `
+    setTimeout(() => {
+      input.focus()
+      input.select()
+    }, 50)
   }
+
 
   return html`
     <div id="file-header" class="row lightgray align-center">
