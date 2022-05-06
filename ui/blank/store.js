@@ -12,7 +12,7 @@ function store(state, emitter) {
   state.renamingFile = false
 
   state.diskFiles = []
-  state.serialFiles = []
+  state.boardFiles = []
 
   emitter.on('open-port-dialog', () => {
     console.log('open-port-dialog')
@@ -38,6 +38,7 @@ function store(state, emitter) {
     window.serialBus.emit('connect', port.path)
   })
   emitter.on('resize-panel', (clientY) => {
+    console.log('resize-panel')
     // Get DOM references
     let bar = document.querySelector('#bar')
     // Get current bar size
@@ -54,6 +55,7 @@ function store(state, emitter) {
     emitter.emit('render')
   })
   emitter.on('toggle-panel', () => {
+    console.log('toggle-panel')
     state.panelCollapsed = !state.panelCollapsed
     emitter.emit('render')
   })
@@ -63,6 +65,7 @@ function store(state, emitter) {
     }
   })
   emitter.on('run', () => {
+    console.log('run')
     let editor = state.cache(AceEditor, 'editor').editor
     state.panelCollapsed = false
     state.panel = 'terminal'
@@ -70,16 +73,59 @@ function store(state, emitter) {
     window.serialBus.emit('run', editor.getValue())
   })
   emitter.on('stop', () => {
+    console.log('stop')
     state.panelCollapsed = false
     state.panel = 'terminal'
     emitter.emit('render')
     window.serialBus.emit('stop')
   })
   emitter.on('reset', () => {
+    console.log('reset')
     state.panelCollapsed = false
     state.panel = 'terminal'
     emitter.emit('render')
     window.serialBus.emit('reset')
+  })
+
+
+  emitter.on('list-board-folder', () => {
+    console.log('list-board-folder')
+    window.serialBus.emit('list-files')
+    let outputBuffer = ''
+    function parseData(o) {
+      outputBuffer += o
+      rawMessage = extractREPLMessage(outputBuffer)
+      if (rawMessage) {
+        console.log('list-board-folder', 'found', rawMessage)
+        // Prepare to parse JSON
+        rawMessage = rawMessage.replace(/'/g, `"`)
+        let jsonMessage = JSON.parse(rawMessage)
+        state.boardFiles = jsonMessage
+        emitter.emit('render')
+        window.serialBus.off('data', parseData)
+      }
+    }
+    window.serialBus.on('data', parseData)
+  })
+  emitter.on('select-board-file', (file) => {
+    state.selectedDevice = 'board'
+    state.selectedFile = file
+
+    let outputBuffer = ''
+    function parseData(o) {
+      outputBuffer += o
+      rawMessage = extractREPLMessage(outputBuffer)
+      if (rawMessage) {
+        console.log('list-board-folder', 'found', rawMessage)
+        state.cache(AceEditor, 'editor').editor.setValue(rawMessage)
+        window.serialBus.off('data', parseData)
+      }
+    }
+    window.serialBus.on('data', parseData)
+
+    window.serialBus.emit('load-file', file)
+
+    emitter.emit('render')
   })
 
   emitter.on('open-disk-folder', () => {
@@ -167,6 +213,7 @@ function store(state, emitter) {
     state.connected = true
     state.panelCollapsed = false
     emitter.emit('close-port-dialog')
+    emitter.emit('list-board-folder')
     emitter.emit('render')
   })
   window.serialBus.on('serialBus', (port) => {
@@ -221,4 +268,17 @@ function store(state, emitter) {
       emitter.emit('render')
     }
   })
+}
+
+function extractREPLMessage(buffer) {
+  let beginIndex = buffer.indexOf('<BEGINREC>')
+  let endIndex = buffer.indexOf('<ENDREC>')
+  if (beginIndex !== -1 && endIndex !== -1) {
+    return buffer.substring(
+      beginIndex + ('<BEGINREC>').length,
+      endIndex
+    )
+  } else {
+    return false
+  }
 }

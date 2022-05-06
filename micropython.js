@@ -2,27 +2,29 @@ const EventEmitter = require('events')
 const SerialPort = require('serialport')
 
 const codeListFiles = `
-print('<REC>')
 from os import listdir
+print('<BEGINREC>')
 print(listdir())
-print('<EOF>')
+print('<ENDREC>')
 `
 const codeLoadFile = (path) => {
 	return `
-print('<REC>')
+print('<BEGINREC>')
 with open('${path}', 'r') as f:
 	line = f.readline()
 	while line != '':
 		print(line, end='')
 		line = f.readline()
-print('<EOF>')
+print('<ENDREC>')
 `
 }
 
 const codeRemoveFile = (path) => {
 	return `
 from os import remove
+print('<BEGINREC>')
 remove('${path}')
+print('<ENDREC>')
 `
 }
 

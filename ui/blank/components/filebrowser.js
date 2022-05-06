@@ -1,4 +1,18 @@
 function FileBrowser(state, emit) {
+  function BoardFile(file) {
+    let selectedClass = ''
+    if (state.selectedDevice === 'board' && state.selectedFile === file) {
+      selectedClass = 'selected'
+    }
+    return html`
+      <li
+        class=${selectedClass}
+        onclick=${() => emit('select-board-file', file)}
+      >
+        ${file}
+      </li>
+    `
+  }
   function DiskFile(file) {
     let selectedClass = ''
     if (state.selectedDevice === 'disk' && state.selectedFile === file) {
@@ -18,7 +32,7 @@ function FileBrowser(state, emit) {
     <div id="files" class="row fill">
       <div id="board-files" class="fill">
         <ul id="file-list" class="fill white column">
-
+          ${state.boardFiles.map(BoardFile)}
         </ul>
       </div>
       <div id="file-actions" class="column fill-vertical align-center">
