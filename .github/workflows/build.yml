@@ -115,7 +115,7 @@ jobs:
 
     steps:
       - name: Download job transfer artifact
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4.1.7
         with:
           name: ${{ env.JOB_TRANSFER_ARTIFACT }}
           path: ${{ env.JOB_TRANSFER_ARTIFACT }}
@@ -174,7 +174,7 @@ jobs:
   #   runs-on: ubuntu-latest
   #   steps:
   #     - name: Download [GitHub Actions]
-  #       uses: actions/download-artifact@v2
+  #       uses: actions/download-artifact@v4.1.7
   #       with:
   #         name: ${{ env.JOB_TRANSFER_ARTIFACT }}
   #         path: ${{ env.JOB_TRANSFER_ARTIFACT }}
@@ -195,7 +195,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download [GitHub Actions]
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4.1.7
         with:
           name: ${{ env.JOB_TRANSFER_ARTIFACT }}
           path: ${{ env.JOB_TRANSFER_ARTIFACT }}
